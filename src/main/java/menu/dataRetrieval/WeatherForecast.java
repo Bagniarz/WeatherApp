@@ -19,16 +19,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherForecast {
-    private Settings settings;
-    private Location location;
+    private final HttpClient client;
+    private final Settings settings;
+    private final Location location;
 
     public WeatherForecast(Settings settings, Location location) {
+        this(HttpClient.newHttpClient(), settings, location);
+    }
+
+    public WeatherForecast(HttpClient client ,Settings settings, Location location) {
+        this.client = client;
         this.settings = settings;
         this.location = location;
     }
 
     public List<Weather> getWeatherList() {
-        HttpClient client = HttpClient.newHttpClient();
         JSONObject jsonObject = new JSONObject();
         try {
             HttpRequest request = HttpRequest

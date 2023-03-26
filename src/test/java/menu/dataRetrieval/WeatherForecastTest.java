@@ -7,8 +7,6 @@ import menu.settings.WeatherInfoSettings;
 import menu.settings.language.Language;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class WeatherForecastTest {
 
     @Test
