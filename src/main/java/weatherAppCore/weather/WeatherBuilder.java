@@ -1,11 +1,18 @@
 package weatherAppCore.weather;
 
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import weatherAppCore.dataRetrieval.forecastResponse.components.UnitInfo;
 
-import java.util.Date;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 @JsonPOJOBuilder
 public class WeatherBuilder {
-    public Weather build(Date date, Date sunRise, Date sunSet, int weatherCode, int temperature, int precipitation, float windSpeed) {
-        return new Weather(date, sunRise, sunSet, weatherCode, temperature, precipitation, windSpeed);
+    public Weather build(String date, String sunrise, String sunset,
+                         int weatherCode, int precipitation, double temperature,
+                         float windSpeed, UnitInfo unitInfo, String scale, boolean reversed) {
+        DecimalFormat df = new DecimalFormat("#");
+        df.setRoundingMode(RoundingMode.CEILING);
+        return new Weather(date, sunrise, sunset, weatherCode, precipitation, Integer.parseInt(df.format(temperature)) , windSpeed, unitInfo, scale, reversed);
     }
 }
