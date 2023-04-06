@@ -1,9 +1,9 @@
 package weatherAppCore.settings;
 
-import weatherAppCore.settings.language.Language;
+import weatherAppCore.settings.language.LanguageSettings;
 
 public class SettingsFactory {
     public Settings createDefaultSettings() {
-        return new Settings(WeatherInfoSettings.CELSIUS, Language.ENGLISH, 1);
+        return new Settings(WeatherInfoSettings.CELSIUS, LanguageSettings.ENGLISH, 1);
     }
 }
