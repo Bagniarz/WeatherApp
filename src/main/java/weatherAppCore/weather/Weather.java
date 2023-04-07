@@ -1,6 +1,7 @@
 package weatherAppCore.weather;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import weatherAppCore.dataRetrieval.forecastResponse.components.UnitInfo;
 
 import java.math.RoundingMode;
@@ -16,6 +17,8 @@ public class Weather {
     final UnitInfo unitInfo;
     String scale;
     boolean reversed;
+    // For now ChangeScale will not be used ()
+    //TODO Rework ChangeScale
     public void changeScale() {
         DecimalFormat df = new DecimalFormat("#");
         df.setRoundingMode(RoundingMode.CEILING);

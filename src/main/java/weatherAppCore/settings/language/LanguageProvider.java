@@ -1,6 +1,7 @@
 package weatherAppCore.settings.language;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -24,18 +25,31 @@ public class LanguageProvider {
         }
     }
 
-    public Map<String, List<String>> importLanguage(LanguageSettings languageSettings) {
-        ObjectMapper mapper = new ObjectMapper();
+    private InputStream getWeatherStatusStream(LanguageSettings languageSettings) {
+        InputStream ioStream;
+        if (languageSettings.equals(LanguageSettings.ENGLISH)) {
+            ioStream = this.getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("languages/weatherStatusENG.json");
+            return ioStream;
+        } else {
+            ioStream = this.getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("languages/weatherStatusPL.json");
+            return ioStream;
+        }
+    }
+
+    public Language importLanguage(LanguageSettings languageSettings) {
+        ObjectMapper mapper = new ObjectMapper()
+                .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         try {
-            return mapper.readValue(getStream(languageSettings), new TypeReference<>() {
-            });
+            Map<String, List<String>> map01 = mapper.readValue(getStream(languageSettings), new TypeReference<>() {});
+            Map<Integer, String> map02 = mapper.readValue(getWeatherStatusStream(languageSettings), new TypeReference<>() {});
+            return new Language(map01, map02);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public Language getLanguage(LanguageSettings languageSettings) {
-        return new Language(importLanguage(languageSettings));
     }
 }

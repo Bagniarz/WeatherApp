@@ -12,4 +12,5 @@ import java.util.Map;
 @Jacksonized
 public class Language {
     Map<String, List<String>> map;
+    Map<Integer, String> weatherStatus;
 }

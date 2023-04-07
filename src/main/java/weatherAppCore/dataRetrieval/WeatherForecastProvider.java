@@ -67,7 +67,6 @@ public class WeatherForecastProvider {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        System.out.println(forecastResponse);
         return forecastResponse;
     }
 
@@ -88,7 +87,6 @@ public class WeatherForecastProvider {
                     "°C",
                     false);
             list.add(weather);
-            System.out.println(list);
         }
         return list;
     }

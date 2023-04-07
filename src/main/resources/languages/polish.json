@@ -1,0 +1,33 @@
+{
+  "welcome": [
+    "Witam w aplikacji WeatherForecast :P"
+  ],
+  "successfulChange": [
+    "Zmiana zatwierdzona"
+  ],
+  "mainMenu": [
+    "1.Rozpocznij",
+    "2.Ustawienia",
+    "3.Wyjdź"
+  ],
+  "settings": [
+    "1.Zmień język",
+    "2.Zmień ilość dni do prognozy pogody",
+    "3.Zmień Ulubione Miejsca(WIP)",
+    "4.Back"
+  ],
+  "language": [
+    "1.English",
+    "2.Polski",
+    "3.Wróć"
+  ],
+  "daysChange": [
+    "Min(1)-(16)Max"
+  ],
+  "startApp01": [
+    "Wpisz nazwę miasta w którym chcesz sprawdzić prognozę pogody"
+  ],
+  "startApp02": [
+    "Wpisz nazwę kraju miasta którego wpisałeś"
+  ]
+}

@@ -1,34 +1,56 @@
 package weatherAppCore.userInput;
 
+import lombok.*;
+import weatherAppCore.exceptions.WrongInputException;
+
 import java.util.Scanner;
 
+@Data
+@Builder
 public class UserInput {
-    private String input;
+    private String string;
+    private int integer;
+    @Getter @Setter (AccessLevel.NONE)
+    private Scanner scanner;
 
-    public UserInput(){}
-
-    public UserInput(String input) {
-        this.input = input;
+    private void initScanner() {
+        this.scanner = new Scanner(System.in);
     }
 
-    public void setInput(String input) {
-        this.input = input;
-    }
-
-    public String getInput() {
-        return input;
-    }
-
-    public void askUserString() {
-        try(Scanner scanner = new Scanner((System.in))) {
-            String result = scanner.nextLine();
-            if (isNumberInString(result) || !isAlphabetic(result)) {
-                setInput(null);
-                return;
-            }
-            setInput(result.toLowerCase());
+    public void askUserInt() throws WrongInputException {
+        initScanner();
+        String result = scanner.nextLine();
+        if (result.length() > 2 ) {
+            throw new WrongInputException();
         }
+        if (!isLetterInNumber(result)) {
+            throw new WrongInputException();
+        }
+        System.out.println("Input: " + result);
+        setInteger(Integer.parseInt(result));
     }
+
+    public void askUserString() throws WrongInputException {
+        initScanner();
+        String result = scanner.nextLine();
+        if (isNumberInString(result) || !isAlphabetic(result)) {
+            throw new WrongInputException();
+        }
+        setString(result.toLowerCase());
+    }
+
+    public void clear() {
+        setInteger(0);
+        setString(null);
+    }
+
+    public boolean isLetterInNumber(String input) {
+        char[] arr = input.toCharArray();
+        for (char c : arr) {
+            if (!Character.isDigit(c)) return false;
+        }
+        return true;
+     }
 
     public boolean isNumberInString(String input) {
         char[] arr = input.toCharArray();

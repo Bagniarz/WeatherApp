@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -27,14 +25,18 @@ class LanguageProviderTest {
     }
 
     @Test
-    void getURL() {
+    void importLanguage_English() {
+        LanguageProvider languageProvider = new LanguageProvider();
+        Language language = languageProvider.importLanguage(LanguageSettings.ENGLISH);
+        language.map.get("welcome").forEach(System.out::println);
+        assertEquals("Welcome to WeatherForecast App :P", outputStream.toString().trim());
     }
 
     @Test
-    void importLanguageEnglish() {
+    void importLanguage_Polish() {
         LanguageProvider languageProvider = new LanguageProvider();
-        Map<String, List<String>> language = languageProvider.importLanguage(LanguageSettings.ENGLISH);
-        language.get("welcome").forEach(System.out::println);
-        assertEquals("Welcome to WeatherForecast App :P", outputStream.toString().trim());
+        Language language = languageProvider.importLanguage(LanguageSettings.POLISH);
+        language.map.get("welcome").forEach(System.out::println);
+        assertEquals("Witam w aplikacji WeatherForecast :P", outputStream.toString().trim());
     }
 }

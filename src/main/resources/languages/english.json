@@ -2,24 +2,32 @@
   "welcome": [
     "Welcome to WeatherForecast App :P"
   ],
+  "successfulChange": [
+    "Change approved"
+  ],
   "mainMenu": [
     "1.Start",
     "2.Settings",
     "3.Quit"
   ],
   "settings": [
-    "1.Language",
-    "2.Weather Forecast Settings",
-    "3.Back"
+    "1.Change language",
+    "2.Change days to forecast",
+    "3.Manage favourite locations(WIP)",
+    "4.Back"
   ],
   "language": [
     "1.English",
-    "2.Polish",
+    "2.Polski",
     "3.Back"
   ],
-  "weatherForecastSettings": [
-    "1.Change number of days to forecast",
-    "2.Change scale",
-    "3.Back"
+  "daysChange": [
+    "Min(1)-(16)Max"
+  ],
+  "startApp01": [
+    "Enter the name of the city where you want to check the weather forecast"
+  ],
+  "startApp02": [
+    "Enter the name of the country where your typed city is"
   ]
 }

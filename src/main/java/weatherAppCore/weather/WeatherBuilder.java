@@ -13,6 +13,11 @@ public class WeatherBuilder {
                          float windSpeed, UnitInfo unitInfo, String scale, boolean reversed) {
         DecimalFormat df = new DecimalFormat("#");
         df.setRoundingMode(RoundingMode.CEILING);
-        return new Weather(date, sunrise, sunset, weatherCode, precipitation, Integer.parseInt(df.format(temperature)) , windSpeed, unitInfo, scale, reversed);
+        return new Weather(date, sunrise, sunset,
+                weatherCode,
+                precipitation, Integer.parseInt(df.format(temperature)),
+                windSpeed,
+                unitInfo,
+                scale, reversed);
     }
 }
