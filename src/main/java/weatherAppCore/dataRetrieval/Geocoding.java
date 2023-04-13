@@ -1,10 +1,18 @@
 package weatherAppCore.dataRetrieval;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import weatherAppCore.coordinates.Coordinates;
 import weatherAppCore.coordinates.CoordinatesFactory;
-import weatherAppCore.exceptions.LocationNotFoundException;
+import weatherAppCore.dataRetrieval.geocodingResponse.GeocodingResponseObj;
+import weatherAppCore.exceptions.internalServerException.InternalServerException;
+import weatherAppCore.exceptions.wrongInputException.locationNotFoundException.LocationNotFoundException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -12,47 +20,66 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class Geocoding {
     HttpClient client;
-    String response;
+    String response, excMessLocationNotFound, excMessInternalServerException;
 
-    private void initResponse(String cityName, String country) throws LocationNotFoundException {
+    private List<GeocodingResponseObj> createGeocodingResponse(HttpResponse<String> response, ObjectMapper mapper) throws LocationNotFoundException, InternalServerException {
+        List<GeocodingResponseObj> list;
         try {
-            HttpRequest request = HttpRequest
-                    .newBuilder(new URI("https://api.api-ninjas.com/v1/geocoding?city=" + cityName + "&country=" + country))
-                    .header("X-Api-Key", "FcrzE0MbWTgJsS3zUNv+AA==btj0ZifhJZbfz3sV")
-                    .build();
-            HttpResponse<String> httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
-            if (httpResponse.body().length() < 3) throw new LocationNotFoundException();
-            setResponse(httpResponse.body());
-        } catch (URISyntaxException | IOException | InterruptedException e) {
-            e.printStackTrace();
+           list = mapper.readValue(response.body(), new TypeReference<>(){});
+        } catch (JsonProcessingException e) {
+            throw new InternalServerException(excMessInternalServerException);
         }
+        if (list.isEmpty()) {
+            throw new LocationNotFoundException(excMessLocationNotFound);
+        }
+        return list;
     }
 
-    public Coordinates importCoordinates(String cityName, String country) throws LocationNotFoundException {
-        initResponse(cityName, country);
-        String[] strings;
-        strings = response.substring(0, response.indexOf("}") + 1).split(",");
-        return findCoordinates(strings);
-    }
-
-    public Coordinates findCoordinates(String[] input) {
+    public Coordinates importCoordinates(String cityName, String country, String apiKey, ObjectMapper mapper) throws LocationNotFoundException, InternalServerException {
+        List<GeocodingResponseObj> list = createGeocodingResponse(getResponse(createRequest(cityName, country, apiKey)), configureMapper(mapper));
         CoordinatesFactory coordinatesFactory = new CoordinatesFactory();
-        double x = 0 , y = 0;
-        for (String element : input) {
-            if (element.contains("latitude"))  {
-                String s = element.substring(element.indexOf(":") + 1);
-                x = Double.parseDouble(s);
-            }
-            if (element.contains("longitude")) {
-                String s = element.substring(element.indexOf(":") + 1);
-                y = Double.parseDouble(s);
-            }
+        System.out.println(list);
+        return coordinatesFactory.buildCoordinates(list.get(0).getLatitude(), list.get(0).getLongitude());
+    }
+
+    private HttpRequest createRequest(String cityName, String country, String apiKey) {
+        HttpRequest request;
+        try {
+            request = HttpRequest
+                    .newBuilder(new URI("https://api.api-ninjas.com/v1/geocoding?city=" + cityName + "&country=" + country))
+                    .header("X-Api-Key", apiKey)
+                    .header("accept", "application/json")
+                    .build();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException();
         }
-        return coordinatesFactory.buildCoordinates(x, y);
+        return request;
+    }
+
+    private HttpResponse<String> getResponse(HttpRequest request) throws LocationNotFoundException {
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException();
+        }
+        if (response == null || response.body().length() < 3) {
+            throw new LocationNotFoundException(excMessLocationNotFound);
+        }
+        return response;
+    }
+
+    private ObjectMapper configureMapper(ObjectMapper mapper) {
+        mapper
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
+                .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+        return mapper;
     }
 }
