@@ -29,5 +29,15 @@
   ],
   "startApp02": [
     "Wpisz nazwę kraju miasta którego wpisałeś"
+  ],
+  "result": [
+    "Pogoda",
+    "Data = ",
+    "Wschód słóńca = ",
+    "Zachód słońca = ",
+    "Stan pogody = ",
+    "Opad atmosferyczny = ",
+    "Temperatura = ",
+    "Prędkość wiatru = "
   ]
 }

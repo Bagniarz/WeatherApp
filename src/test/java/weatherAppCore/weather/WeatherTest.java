@@ -13,7 +13,7 @@ class WeatherTest {
                 0, 0, -40, 0,
                 null, "°F", true);
         weather.changeScale();
-        assertTrue(-40 == weather.temperature_2m_max && "°C".equals(weather.scale));
+        assertTrue(-40 == weather.getTemperature_2m_max() && "°C".equals(weather.getScale()));
     }
 
     @Test
@@ -23,7 +23,7 @@ class WeatherTest {
                 0, 0, -40, 0,
                 null, "°C", false);
         weather.changeScale();
-        assertTrue(-40 == weather.temperature_2m_max && "°F".equals(weather.scale));
+        assertTrue(-40 == weather.getTemperature_2m_max() && "°F".equals(weather.getScale()));
     }
 
     @Test
@@ -33,7 +33,7 @@ class WeatherTest {
                 0, 0, 40, 0,
                 null, "°C", false);
         weather.changeScale();
-        assertTrue(104 == weather.temperature_2m_max && "°F".equals(weather.scale));
+        assertTrue(104 == weather.getTemperature_2m_max() && "°F".equals(weather.getScale()));
     }
 
     @Test
@@ -43,7 +43,7 @@ class WeatherTest {
                 0, 0, -25, 0,
                 null, "°C", false);
         weather.changeScale();
-        assertTrue(-13 == weather.temperature_2m_max && "°F".equals(weather.scale));
+        assertTrue(-13 == weather.getTemperature_2m_max() && "°F".equals(weather.getScale()));
     }
 
     @Test
@@ -53,7 +53,7 @@ class WeatherTest {
                 0, 0, 32, 0,
                 null, "°C", true);
         weather.changeScale();
-        assertTrue(0 == weather.temperature_2m_max && "°C".equals(weather.scale));
+        assertTrue(0 == weather.getTemperature_2m_max() && "°C".equals(weather.getScale()));
     }
 
     @Test
@@ -63,6 +63,6 @@ class WeatherTest {
                 0, 0, -25, 0,
                 null, "°C", true);
         weather.changeScale();
-        assertTrue(-31 == weather.temperature_2m_max && "°C".equals(weather.scale));
+        assertTrue(-31 == weather.getTemperature_2m_max() && "°C".equals(weather.getScale()));
     }
 }

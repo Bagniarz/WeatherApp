@@ -15,7 +15,7 @@ public class CoordinatesFactory {
             x = Double.parseDouble(nf.parse(df.format(x)).toString());
             y = Double.parseDouble(nf.parse(df.format(y)).toString());
         } catch (ParseException e) {
-            e.printStackTrace();
+            throw new RuntimeException();
         }
         return new Coordinates(x, y);
     }

@@ -1,14 +1,14 @@
 package weatherAppCore.userInput;
 
 import lombok.*;
-import weatherAppCore.exceptions.WrongInputException;
+import weatherAppCore.exceptions.wrongInputException.WrongInputException;
 
 import java.util.Scanner;
 
 @Data
 @Builder
 public class UserInput {
-    private String string;
+    private String string, excMess;
     private int integer;
     @Getter @Setter (AccessLevel.NONE)
     private Scanner scanner;
@@ -21,10 +21,10 @@ public class UserInput {
         initScanner();
         String result = scanner.nextLine();
         if (result.length() > 2 ) {
-            throw new WrongInputException();
+            throw new WrongInputException(excMess);
         }
         if (!isLetterInNumber(result)) {
-            throw new WrongInputException();
+            throw new WrongInputException(excMess);
         }
         System.out.println("Input: " + result);
         setInteger(Integer.parseInt(result));
@@ -34,7 +34,7 @@ public class UserInput {
         initScanner();
         String result = scanner.nextLine();
         if (isNumberInString(result) || !isAlphabetic(result)) {
-            throw new WrongInputException();
+            throw new WrongInputException(excMess);
         }
         setString(result.toLowerCase());
     }

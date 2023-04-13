@@ -1,0 +1,7 @@
+{
+  "DaysException": "Dni prognozowania pogody nie mogą być niższe niż 1 i wyższe niż 16!",
+  "WrongInputException": "Błędne dane!",
+  "LocationNotFoundException": "Lokalizacja nie znaleziona!",
+  "InternalServerException": "Błąd serwera Geolokalizacji! Spróbój ponownie",
+  "LangaugeImportFileException": "Nie znaleziono plików językowych!"
+}

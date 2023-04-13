@@ -1,8 +1,8 @@
-import weatherAppCore.menu.Menu;
+import weatherAppCore.menu.WeatherApp;
 
 public class Main {
     public static void main(String[] args) {
-        Menu menu = Menu.initConfiguration();
-        menu.initApp();
+        WeatherApp weatherApp = WeatherApp.initAppConfiguration();
+        weatherApp.startAppMenu();
     }
 }

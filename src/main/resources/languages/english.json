@@ -29,5 +29,15 @@
   ],
   "startApp02": [
     "Enter the name of the country where your typed city is"
+  ],
+  "result": [
+    "Weather",
+    "Time = ",
+    "Sunrise = ",
+    "Sunset = ",
+    "WeatherStatus = ",
+    "Precipitation = ",
+    "Temperature = ",
+    "WindSpeed = "
   ]
 }

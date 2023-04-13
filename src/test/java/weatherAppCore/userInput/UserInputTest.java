@@ -1,7 +1,7 @@
 package weatherAppCore.userInput;
 
 import org.junit.jupiter.api.Test;
-import weatherAppCore.exceptions.WrongInputException;
+import weatherAppCore.exceptions.wrongInputException.WrongInputException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -10,7 +10,6 @@ import java.io.InputStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserInputTest {
-
     @Test
     void testAskUserString_Equals() throws WrongInputException {
         try(InputStream ignored = System.in) {

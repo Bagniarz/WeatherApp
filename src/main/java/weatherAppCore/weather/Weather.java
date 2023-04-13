@@ -1,13 +1,16 @@
 package weatherAppCore.weather;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import weatherAppCore.dataRetrieval.forecastResponse.components.UnitInfo;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 @AllArgsConstructor
+@FieldDefaults (level = AccessLevel.PRIVATE)
 @Data
 public class Weather {
     final String time, sunrise, sunset;
@@ -17,7 +20,6 @@ public class Weather {
     final UnitInfo unitInfo;
     String scale;
     boolean reversed;
-    // For now ChangeScale will not be used ()
     //TODO Rework ChangeScale
     public void changeScale() {
         DecimalFormat df = new DecimalFormat("#");

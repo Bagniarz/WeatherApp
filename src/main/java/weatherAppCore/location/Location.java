@@ -1,6 +1,12 @@
 package weatherAppCore.location;
 
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 import weatherAppCore.coordinates.Coordinates;
 
-public record Location(Coordinates coordinates, String cityName) {
+@Value
+@Jacksonized
+public class Location {
+    Coordinates coordinates;
+    String cityName;
 }

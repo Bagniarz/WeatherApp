@@ -1,8 +1,23 @@
 package weatherAppCore.dataRetrieval.forecastResponse.components;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
+
 import java.util.List;
 
-public record WeatherForecast(List<String> time, List<String> sunrise, List<String> sunset,
-                              List<Integer> temperature_2m_max, List<Integer> weathercode, List<Integer> precipitation_probability_max,
-                              List<Float> windspeed_10m_max) {
+@Value
+@Builder
+@Jacksonized
+public class WeatherForecast {
+    List<String> time, sunrise, sunset;
+    @JsonProperty("temperature_2m_max")
+    List<Integer> temperature;
+    @JsonProperty("weathercode")
+    List<Integer> weatherCode;
+    @JsonProperty("precipitation_probability_max")
+    List<Integer> precipitation;
+    @JsonProperty("windspeed_10m_max")
+    List<Float> windspeed;
 }

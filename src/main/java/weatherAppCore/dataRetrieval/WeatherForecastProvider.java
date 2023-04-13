@@ -34,60 +34,66 @@ public class WeatherForecastProvider {
     }
 
     public HttpRequest createRequest(Location location) {
-        HttpRequest request = null;
+        HttpRequest request;
         try {
             request = HttpRequest
                     .newBuilder(new URI("https://api.open-meteo.com/v1/forecast?latitude="
-                            + location.coordinates().latitude() + "&longitude="
-                            + location.coordinates().longitude()
+                            + location.getCoordinates().getLatitude() + "&longitude="
+                            + location.getCoordinates().getLongitude()
                             + "&daily=temperature_2m_max,precipitation_probability_max,weathercode,sunrise,sunset,windspeed_10m_max" +
                             "&forecast_days=" + settings.getDays() + "&timezone=auto"))
                     .build();
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+           throw new RuntimeException();
         }
         return request;
     }
 
     public HttpResponse<String> getResponse(Location location) {
-        HttpResponse<String> response = null;
+        HttpResponse<String> response;
         try {
             response = client.send(createRequest(location), HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            throw new RuntimeException();
         }
         return response;
     }
 
-    public ForecastResponse getForecastResponse(HttpResponse<String> response) {
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        ForecastResponse forecastResponse = null;
+    public ForecastResponse getForecastResponse(HttpResponse<String> response, ObjectMapper mapper) {
+        ForecastResponse forecastResponse;
         try {
             forecastResponse = mapper.readValue(response.body(), ForecastResponse.class);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            throw new RuntimeException();
         }
         return forecastResponse;
     }
 
-    public List<Weather> getWeatherList(Location location) {
+    public List<Weather> getWeatherList(Location location, ObjectMapper mapper) {
         List<Weather> list = new ArrayList<>(settings.getDays());
-        ForecastResponse forecastResponse = getForecastResponse(getResponse(location));
+        ForecastResponse forecastResponse = getForecastResponse(getResponse(location), configureMapper(mapper));
         WeatherBuilder weatherBuilder = new WeatherBuilder();
         for (int i = 0; i < settings.getDays(); i++) {
             Weather weather = weatherBuilder.build(
-                    forecastResponse.daily().time().get(i),
-                    forecastResponse.daily().sunrise().get(i),
-                    forecastResponse.daily().sunset().get(i),
-                    forecastResponse.daily().weathercode().get(i),
-                    forecastResponse.daily().temperature_2m_max().get(i),
-                    forecastResponse.daily().precipitation_probability_max().get(i),
-                    forecastResponse.daily().windspeed_10m_max().get(i),
-                    forecastResponse.daily_units(),
+                    forecastResponse.getDaily().getTime().get(i),
+                    forecastResponse.getDaily().getSunrise().get(i),
+                    forecastResponse.getDaily().getSunset().get(i),
+                    forecastResponse.getDaily().getWeatherCode().get(i),
+                    forecastResponse.getDaily().getPrecipitation().get(i),
+                    forecastResponse.getDaily().getTemperature().get(i),
+                    forecastResponse.getDaily().getWindspeed().get(i),
+                    forecastResponse.getDailyUnits(),
                     "°C",
                     false);
             list.add(weather);
         }
         return list;
+    }
+
+    private ObjectMapper configureMapper(ObjectMapper mapper) {
+        mapper
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, false);
+        return mapper;
     }
 }
