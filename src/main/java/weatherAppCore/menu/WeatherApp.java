@@ -33,6 +33,7 @@ public class WeatherApp {
     final UserInput input;
     final Geocoding geocoding;
     final WeatherForecastProvider provider;
+    final LanguageProvider languageProvider;
     Language language;
 
     public static WeatherApp initAppConfiguration() {
@@ -53,6 +54,7 @@ public class WeatherApp {
                             .excMessInternalServerException("Geocoding server failure! Try again")
                             .build(),
                     new WeatherForecastProvider(settings),
+                    languageProvider,
                     languageProvider.importLanguage(LanguageSettings.ENGLISH, mapper));
         } catch (LanguageImportFileException e) {
             throw new RuntimeException();
@@ -130,8 +132,12 @@ public class WeatherApp {
         Coordinates coordinates;
         LocationFactory locationFactory = new LocationFactory();
         try {
-            coordinates = geocoding.importCoordinates(cityName, country, (String) settings.getProp().get("apiKey"), mapper);
-        } catch (LocationNotFoundException | InternalServerException exception) {
+            coordinates = geocoding.importCoordinates(cityName, country, settings.getProp().get("apiKey").toString(), mapper);
+        } catch (LocationNotFoundException exception) {
+            System.out.println(language.getErrMessMap().get("LocationNotFoundException"));
+            return;
+        } catch (InternalServerException e) {
+            System.out.println(language.getErrMessMap().get("InternalServerException"));
             return;
         }
         printResult(provider.getWeatherList(locationFactory.buildLocation(coordinates, cityName), mapper));
@@ -155,7 +161,6 @@ public class WeatherApp {
     }
 
     private void changeLanguage() {
-        LanguageProvider languageProvider = new LanguageProvider(language.getErrMessMap().get("LanguageImportFileException"));
         boolean endCycle = false;
         while (!endCycle) {
             print(language.getMap().get("language"));
@@ -205,5 +210,6 @@ public class WeatherApp {
         settings.setExcMess(language.getErrMessMap().get("DaysException"));
         geocoding.setExcMessLocationNotFound(language.getErrMessMap().get("LocationNotFoundException"));
         geocoding.setExcMessInternalServerException(language.getErrMessMap().get("InternalServerException"));
+        languageProvider.setExcMessLanguageImportFileException(language.getErrMessMap().get("LanguageImportFileException"));
     }
 }

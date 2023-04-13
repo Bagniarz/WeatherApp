@@ -26,7 +26,6 @@ public class UserInput {
         if (!isLetterInNumber(result)) {
             throw new WrongInputException(excMess);
         }
-        System.out.println("Input: " + result);
         setInteger(Integer.parseInt(result));
     }
 

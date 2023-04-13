@@ -3,7 +3,10 @@ package weatherAppCore.settings.language;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Value;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import weatherAppCore.exceptions.languageImportFileException.LanguageImportFileException;
 
 import java.io.File;
@@ -13,7 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-@Value
+@Data
+@FieldDefaults (level = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class LanguageProvider {
     String excMessLanguageImportFileException;
 

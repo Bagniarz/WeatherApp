@@ -36,7 +36,7 @@ public class Geocoding {
         } catch (JsonProcessingException e) {
             throw new InternalServerException(excMessInternalServerException);
         }
-        if (list.isEmpty()) {
+        if (list == null || list.isEmpty()) {
             throw new LocationNotFoundException(excMessLocationNotFound);
         }
         return list;
@@ -44,6 +44,9 @@ public class Geocoding {
 
     public Coordinates importCoordinates(String cityName, String country, String apiKey, ObjectMapper mapper) throws LocationNotFoundException, InternalServerException {
         List<GeocodingResponseObj> list = createGeocodingResponse(getResponse(createRequest(cityName, country, apiKey)), configureMapper(mapper));
+        if (list.isEmpty()) {
+            throw new LocationNotFoundException(excMessLocationNotFound);
+        }
         CoordinatesFactory coordinatesFactory = new CoordinatesFactory();
         System.out.println(list);
         return coordinatesFactory.buildCoordinates(list.get(0).getLatitude(), list.get(0).getLongitude());
