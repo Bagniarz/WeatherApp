@@ -1,6 +1,5 @@
 package weatherAppCore.menu;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,65 +7,40 @@ import lombok.experimental.FieldDefaults;
 import weatherAppCore.coordinates.Coordinates;
 import weatherAppCore.dataRetrieval.Geocoding;
 import weatherAppCore.dataRetrieval.WeatherForecastProvider;
-import weatherAppCore.exceptions.internalServerException.InternalServerException;
-import weatherAppCore.exceptions.languageImportFileException.LanguageImportFileException;
+import weatherAppCore.exceptions.InternalAPIConnectionException;
+import weatherAppCore.exceptions.LanguageImportFileException;
 import weatherAppCore.exceptions.wrongInputException.WrongInputException;
-import weatherAppCore.exceptions.wrongInputException.locationNotFoundException.LocationNotFoundException;
+import weatherAppCore.exceptions.wrongInputException.components.LocationNotFoundException;
 import weatherAppCore.location.LocationFactory;
 import weatherAppCore.settings.Settings;
-import weatherAppCore.settings.SettingsFactory;
+import weatherAppCore.settings.WeatherInfoSettings;
 import weatherAppCore.settings.language.Language;
 import weatherAppCore.settings.language.LanguageProvider;
 import weatherAppCore.settings.language.LanguageSettings;
 import weatherAppCore.userInput.UserInput;
 import weatherAppCore.weather.Weather;
 
-import java.net.http.HttpClient;
 import java.util.List;
+
+// TODO Rework exceptions using log4j
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class WeatherApp {
     final Settings settings;
-    final ObjectMapper mapper;
     final UserInput input;
     final Geocoding geocoding;
     final WeatherForecastProvider provider;
     final LanguageProvider languageProvider;
     Language language;
 
-    public static WeatherApp initAppConfiguration() {
-        SettingsFactory settingsFactory = new SettingsFactory();
-        ObjectMapper mapper = new ObjectMapper();
-        LanguageProvider languageProvider = new LanguageProvider("No language files found!");
-        Settings settings = settingsFactory.createDefaultSettings();
-        WeatherApp weatherApp;
-        try {
-            weatherApp = new WeatherApp(settings,
-                    mapper,
-                    UserInput.builder()
-                            .excMess("Wrong Input")
-                            .build(),
-                    Geocoding.builder()
-                            .client(HttpClient.newBuilder().build())
-                            .excMessLocationNotFound("Location not found!")
-                            .excMessInternalServerException("Geocoding server failure! Try again")
-                            .build(),
-                    new WeatherForecastProvider(settings),
-                    languageProvider,
-                    languageProvider.importLanguage(LanguageSettings.ENGLISH, mapper));
-        } catch (LanguageImportFileException e) {
-            throw new RuntimeException();
-        }
-        return weatherApp;
-    }
+//  Printer with translator
 
     private void print(List<String> list) {
         list.forEach(System.out::println);
     }
 
-//    Rework this method to separate responsibility
     private void printResult(List<Weather> list) {
        for (Weather weather : list) {
            System.out.println(getTranslation(weather));
@@ -87,6 +61,8 @@ public class WeatherApp {
                 " }";
     }
 
+//  WeatherApp Merging all core methods
+
     public void startAppMenu() {
         boolean endApp = false;
         print(language.getMap().get("welcome"));
@@ -101,10 +77,13 @@ public class WeatherApp {
                     default -> endApp = true;
                 }
             } catch (WrongInputException e) {
+                System.err.println(language.getErrMessMap().get("WrongInputException"));
                 input.clear();
             }
         }
     }
+
+//  WeatherForecasting
 
     public void startWeatherForecasting() {
        print(language.getMap().get("startApp01"));
@@ -114,6 +93,7 @@ public class WeatherApp {
            input.askUserString();
            cityName = input.getString();
        } catch (WrongInputException e) {
+           System.err.println(language.getErrMessMap().get("WrongInputException"));
            input.clear();
            return;
        }
@@ -122,6 +102,7 @@ public class WeatherApp {
            input.askUserString();
            country = input.getString();
        } catch (WrongInputException e) {
+           System.err.println(language.getErrMessMap().get("WrongInputException"));
            input.clear();
            return;
        }
@@ -132,16 +113,18 @@ public class WeatherApp {
         Coordinates coordinates;
         LocationFactory locationFactory = new LocationFactory();
         try {
-            coordinates = geocoding.importCoordinates(cityName, country, settings.getProp().get("apiKey").toString(), mapper);
+            coordinates = geocoding.importCoordinates(cityName, country, settings.getProp().get("apiKey").toString());
         } catch (LocationNotFoundException exception) {
-            System.out.println(language.getErrMessMap().get("LocationNotFoundException"));
+            System.err.println(language.getErrMessMap().get("LocationNotFoundException"));
             return;
-        } catch (InternalServerException e) {
-            System.out.println(language.getErrMessMap().get("InternalServerException"));
+        } catch (InternalAPIConnectionException e) {
+            System.err.println(language.getErrMessMap().get("InternalServerException"));
             return;
         }
-        printResult(provider.getWeatherList(locationFactory.buildLocation(coordinates, cityName), mapper));
+        printResult(provider.getWeatherList(locationFactory.buildLocation(coordinates, cityName)));
     }
+
+//  Settings
 
     private void changeSettingsMenu() {
         boolean endCycle = false;
@@ -152,9 +135,11 @@ public class WeatherApp {
                 switch (input.getInteger()) {
                     case 1 -> changeLanguage();
                     case 2 -> changeDays();
+                    case 3 -> changeScale();
                     default -> endCycle = true;
                 }
             } catch (WrongInputException e) {
+                System.err.println(language.getErrMessMap().get("WrongInputException"));
                 input.clear();
             }
         }
@@ -170,24 +155,23 @@ public class WeatherApp {
                     case 1 -> {
                         settings.setLanguageSettings(LanguageSettings.ENGLISH);
                         try {
-                            setLanguage(languageProvider.importLanguage(settings.getLanguageSettings(), mapper));
+                            setLanguage(languageProvider.importLanguage(settings.getLanguageSettings()));
                         } catch (LanguageImportFileException e) {
-                            throw new RuntimeException();
+                            throw new RuntimeException(e);
                         }
-                        updateExcMess();
                     }
                     case 2 -> {
                         settings.setLanguageSettings(LanguageSettings.POLISH);
                         try {
-                            setLanguage(languageProvider.importLanguage(settings.getLanguageSettings(), mapper));
+                            setLanguage(languageProvider.importLanguage(settings.getLanguageSettings()));
                         } catch (LanguageImportFileException e) {
-                            throw new RuntimeException();
+                            throw new RuntimeException(e);
                         }
-                        updateExcMess();
                     }
                     default -> endCycle = true;
                 }
             } catch (WrongInputException e) {
+                System.err.println(language.getErrMessMap().get("WrongInputException"));
                 input.clear();
             }
             print(language.getMap().get("successfulChange"));
@@ -200,16 +184,33 @@ public class WeatherApp {
             input.askUserInt();
             settings.setDays(input.getInteger());
         } catch (WrongInputException e) {
+            System.err.println(language.getErrMessMap().get("WrongInputException"));
             input.clear();
         }
         print(language.getMap().get("successfulChange"));
     }
 
-    private void updateExcMess() {
-        input.setExcMess(language.getErrMessMap().get("WrongInputException"));
-        settings.setExcMess(language.getErrMessMap().get("DaysException"));
-        geocoding.setExcMessLocationNotFound(language.getErrMessMap().get("LocationNotFoundException"));
-        geocoding.setExcMessInternalServerException(language.getErrMessMap().get("InternalServerException"));
-        languageProvider.setExcMessLanguageImportFileException(language.getErrMessMap().get("LanguageImportFileException"));
+    private void changeScale() {
+        boolean endCycle = false;
+        print(language.getMap().get("changeScale"));
+        while (!endCycle) {
+            try {
+                input.askUserInt();
+                switch (input.getInteger()) {
+                    case 1 -> settings.setWeatherInfoSettings(WeatherInfoSettings.CELSIUS);
+                    case 2 -> settings.setWeatherInfoSettings(WeatherInfoSettings.FAHRENHEIT);
+                    default -> endCycle = true;
+                }
+            } catch (WrongInputException e) {
+                System.err.println(language.getErrMessMap().get("WrongInputException"));
+                input.clear();
+            }
+            print(language.getMap().get("successfulChange"))
+        }
+    }
+//  Update methods
+
+    private void updateLanguage(LanguageSettings languageSettings) {
+
     }
 }

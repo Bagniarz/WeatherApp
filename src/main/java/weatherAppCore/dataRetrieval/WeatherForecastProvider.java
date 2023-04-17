@@ -19,21 +19,45 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Value
 public class WeatherForecastProvider {
     HttpClient client;
     Settings settings;
+    ObjectMapper mapper;
 
-    public WeatherForecastProvider(Settings settings) {
-        this(HttpClient.newHttpClient(), settings);
+    public WeatherForecastProvider(Settings settings, ObjectMapper mapper) {
+        this(HttpClient.newHttpClient(), settings, mapper);
     }
 
-    public WeatherForecastProvider(HttpClient client , Settings settings) {
+    public WeatherForecastProvider(HttpClient client, Settings settings, ObjectMapper mapper) {
         this.client = client;
         this.settings = settings;
+        this.mapper = mapper;
     }
 
-    public HttpRequest createRequest(Location location) {
+    private ForecastResponse getForecastResponse(HttpResponse<String> response) {
+        ForecastResponse forecastResponse;
+        configureMapper();
+        try {
+            forecastResponse = mapper.readValue(response.body(), ForecastResponse.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return forecastResponse;
+    }
+
+    private HttpResponse<String> getResponse(Location location) {
+        HttpResponse<String> response;
+        try {
+            response = client.send(createRequest(location), HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return response;
+    }
+
+    private HttpRequest createRequest(Location location) {
         HttpRequest request;
         try {
             request = HttpRequest
@@ -44,34 +68,14 @@ public class WeatherForecastProvider {
                             "&forecast_days=" + settings.getDays() + "&timezone=auto"))
                     .build();
         } catch (URISyntaxException e) {
-           throw new RuntimeException();
+            throw new RuntimeException(e);
         }
         return request;
     }
 
-    public HttpResponse<String> getResponse(Location location) {
-        HttpResponse<String> response;
-        try {
-            response = client.send(createRequest(location), HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException();
-        }
-        return response;
-    }
-
-    public ForecastResponse getForecastResponse(HttpResponse<String> response, ObjectMapper mapper) {
-        ForecastResponse forecastResponse;
-        try {
-            forecastResponse = mapper.readValue(response.body(), ForecastResponse.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException();
-        }
-        return forecastResponse;
-    }
-
-    public List<Weather> getWeatherList(Location location, ObjectMapper mapper) {
+    public List<Weather> getWeatherList(Location location) {
         List<Weather> list = new ArrayList<>(settings.getDays());
-        ForecastResponse forecastResponse = getForecastResponse(getResponse(location), configureMapper(mapper));
+        ForecastResponse forecastResponse = getForecastResponse(getResponse(location));
         WeatherBuilder weatherBuilder = new WeatherBuilder();
         for (int i = 0; i < settings.getDays(); i++) {
             Weather weather = weatherBuilder.build(
@@ -90,10 +94,9 @@ public class WeatherForecastProvider {
         return list;
     }
 
-    private ObjectMapper configureMapper(ObjectMapper mapper) {
+    private void configureMapper() {
         mapper
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, false);
-        return mapper;
     }
 }

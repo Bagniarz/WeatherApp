@@ -2,6 +2,7 @@ package weatherAppCore.dataRetrieval.forecastResponse.components;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 

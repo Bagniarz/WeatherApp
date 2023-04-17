@@ -20,7 +20,7 @@ public class Weather {
     final UnitInfo unitInfo;
     String scale;
     boolean reversed;
-    //TODO Rework ChangeScale
+//  TODO Rework scale
     public void changeScale() {
         DecimalFormat df = new DecimalFormat("#");
         df.setRoundingMode(RoundingMode.CEILING);

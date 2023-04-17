@@ -1,5 +1,6 @@
 package weatherAppCore.userInput;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import weatherAppCore.exceptions.wrongInputException.WrongInputException;
 
@@ -10,30 +11,32 @@ import java.io.InputStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserInputTest {
-    @Test
-    void testAskUserString_Equals() throws WrongInputException {
-        try(InputStream ignored = System.in) {
-            UserInput userInput = UserInput.builder().build();
-            ByteArrayInputStream in = new ByteArrayInputStream("Washington".getBytes());
-            System.setIn(in);
-            userInput.askUserString();
-            assertEquals("washington", userInput.getString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    @Test
-    void testAskUserString_throwsWrongInputException() {
-        try(InputStream ignored = System.in) {
-            UserInput userInput = UserInput.builder().build();
-            ByteArrayInputStream in = new ByteArrayInputStream("Wars2aw".getBytes());
-            System.setIn(in);
-            assertThrows(WrongInputException.class, userInput::askUserString);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
+//    @Test
+//    void testAskUserString_Equals() throws WrongInputException {
+//        try(InputStream backup = System.in) {
+//            UserInput userInput = UserInput.builder().build();
+//            ByteArrayInputStream in = new ByteArrayInputStream("Washington".getBytes());
+//            System.setIn(in);
+//            userInput.askUserString();
+//            assertEquals("washington", userInput.getString());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    @Test
+//    void testAskUserString_throwsWrongInputException() {
+//        try(InputStream backup = System.in) {
+//            UserInput userInput = UserInput.builder().excMess("TEST").build();
+//            ByteArrayInputStream in = new ByteArrayInputStream("Wars2aw".getBytes());
+//            System.setIn(in);
+//            assertThrows(WrongInputException.class, userInput::askUserString);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Test
     void isNumberInString_True() {

@@ -11,8 +11,8 @@ import lombok.experimental.FieldDefaults;
 import weatherAppCore.coordinates.Coordinates;
 import weatherAppCore.coordinates.CoordinatesFactory;
 import weatherAppCore.dataRetrieval.geocodingResponse.GeocodingResponseObj;
-import weatherAppCore.exceptions.internalServerException.InternalServerException;
-import weatherAppCore.exceptions.wrongInputException.locationNotFoundException.LocationNotFoundException;
+import weatherAppCore.exceptions.InternalAPIConnectionException;
+import weatherAppCore.exceptions.wrongInputException.components.LocationNotFoundException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -27,29 +27,33 @@ import java.util.List;
 @Builder
 public class Geocoding {
     HttpClient client;
-    String response, excMessLocationNotFound, excMessInternalServerException;
+    String response;
+    final ObjectMapper mapper;
 
-    private List<GeocodingResponseObj> createGeocodingResponse(HttpResponse<String> response, ObjectMapper mapper) throws LocationNotFoundException, InternalServerException {
+    private List<GeocodingResponseObj> createGeocodingResponse(HttpResponse<String> response) throws LocationNotFoundException, InternalAPIConnectionException {
         List<GeocodingResponseObj> list;
         try {
            list = mapper.readValue(response.body(), new TypeReference<>(){});
         } catch (JsonProcessingException e) {
-            throw new InternalServerException(excMessInternalServerException);
+            throw new InternalAPIConnectionException(e);
         }
         if (list == null || list.isEmpty()) {
-            throw new LocationNotFoundException(excMessLocationNotFound);
+            throw new LocationNotFoundException();
         }
         return list;
     }
 
-    public Coordinates importCoordinates(String cityName, String country, String apiKey, ObjectMapper mapper) throws LocationNotFoundException, InternalServerException {
-        List<GeocodingResponseObj> list = createGeocodingResponse(getResponse(createRequest(cityName, country, apiKey)), configureMapper(mapper));
-        if (list.isEmpty()) {
-            throw new LocationNotFoundException(excMessLocationNotFound);
+    private HttpResponse<String> getResponse(HttpRequest request) throws LocationNotFoundException {
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException();
         }
-        CoordinatesFactory coordinatesFactory = new CoordinatesFactory();
-        System.out.println(list);
-        return coordinatesFactory.buildCoordinates(list.get(0).getLatitude(), list.get(0).getLongitude());
+        if (response == null || response.body().length() < 3) {
+            throw new LocationNotFoundException();
+        }
+        return response;
     }
 
     private HttpRequest createRequest(String cityName, String country, String apiKey) {
@@ -66,23 +70,17 @@ public class Geocoding {
         return request;
     }
 
-    private HttpResponse<String> getResponse(HttpRequest request) throws LocationNotFoundException {
-        HttpResponse<String> response;
-        try {
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException();
+    public Coordinates importCoordinates(String cityName, String country, String apiKey) throws LocationNotFoundException, InternalAPIConnectionException {
+        List<GeocodingResponseObj> list = createGeocodingResponse(getResponse(createRequest(cityName, country, apiKey)));
+        if (list.isEmpty()) {
+            throw new LocationNotFoundException();
         }
-        if (response == null || response.body().length() < 3) {
-            throw new LocationNotFoundException(excMessLocationNotFound);
-        }
-        return response;
+        CoordinatesFactory coordinatesFactory = new CoordinatesFactory();
+        System.out.println(list);
+        return coordinatesFactory.buildCoordinates(list.get(0).getLatitude(), list.get(0).getLongitude());
     }
 
-    private ObjectMapper configureMapper(ObjectMapper mapper) {
-        mapper
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
-                .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-        return mapper;
+    private void configureMapper() {
+        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
     }
 }

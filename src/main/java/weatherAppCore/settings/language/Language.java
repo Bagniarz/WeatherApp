@@ -1,6 +1,7 @@
 package weatherAppCore.settings.language;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -11,7 +12,7 @@ import java.util.Map;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
+@AllArgsConstructor
 @Jacksonized
 public class Language {
     Map<String, List<String>> map;

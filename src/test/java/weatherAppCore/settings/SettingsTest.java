@@ -1,7 +1,7 @@
 package weatherAppCore.settings;
 
 import org.junit.jupiter.api.Test;
-import weatherAppCore.exceptions.wrongInputException.daysException.DaysException;
+import weatherAppCore.exceptions.wrongInputException.components.DaysException;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
