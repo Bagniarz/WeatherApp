@@ -13,8 +13,9 @@
   "settings": [
     "1.Zmień język",
     "2.Zmień ilość dni do prognozy pogody",
-    "3.Zmień Ulubione Miejsca(WIP)",
-    "4.Back"
+    "3.Zmień skalę",
+    "4.Zmień ulubione miejsca(WIP)",
+    "5.Back"
   ],
   "language": [
     "1.English",
@@ -23,6 +24,11 @@
   ],
   "daysChange": [
     "Min(1)-(16)Max"
+  ],
+  "changeScale": [
+    "1.°C",
+    "2.°F",
+    "3.Back"
   ],
   "startApp01": [
     "Wpisz nazwę miasta w którym chcesz sprawdzić prognozę pogody"

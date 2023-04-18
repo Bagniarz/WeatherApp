@@ -21,6 +21,7 @@ import weatherAppCore.userInput.UserInput;
 import weatherAppCore.weather.Weather;
 
 import java.util.List;
+import java.util.Scanner;
 
 // TODO Rework exceptions using log4j
 
@@ -34,6 +35,7 @@ public class WeatherApp {
     final WeatherForecastProvider provider;
     final LanguageProvider languageProvider;
     Language language;
+    final Scanner scanner = new Scanner(System.in);
 
 //  Printer with translator
 
@@ -42,9 +44,9 @@ public class WeatherApp {
     }
 
     private void printResult(List<Weather> list) {
-       for (Weather weather : list) {
-           System.out.println(getTranslation(weather));
-       }
+        for (Weather weather : list) {
+            System.out.println(getTranslation(weather));
+        }
     }
 
     private String getTranslation(Weather weather) {
@@ -57,7 +59,7 @@ public class WeatherApp {
                 language.getMap().get("result").get(4) + language.getWeatherStatus().get(weather.getWeatherCode()) + endString +
                 language.getMap().get("result").get(5) + weather.getPrecipitation_probability_max() + weather.getUnitInfo().getPrecipitation() + endString +
                 language.getMap().get("result").get(6) + weather.getTemperature_2m_max() + weather.getUnitInfo().getTemperature() + endString +
-                language.getMap().get("result").get(7) +  weather.getWindSpeed_10_max() + weather.getUnitInfo().getWindSpeed() + endString +
+                language.getMap().get("result").get(7) + weather.getWindSpeed_10_max() + weather.getUnitInfo().getWindSpeed() + endString +
                 " }";
     }
 
@@ -66,10 +68,10 @@ public class WeatherApp {
     public void startAppMenu() {
         boolean endApp = false;
         print(language.getMap().get("welcome"));
-        while(!endApp) {
+        while (!endApp) {
             print(language.getMap().get("mainMenu"));
             try {
-                input.askUserInt();
+                input.askUserInt(scanner);
                 switch (input.getInteger()) {
                     case 1 -> startWeatherForecasting();
                     case 2 -> changeSettingsMenu();
@@ -86,27 +88,27 @@ public class WeatherApp {
 //  WeatherForecasting
 
     public void startWeatherForecasting() {
-       print(language.getMap().get("startApp01"));
-       String cityName;
-       String country;
-       try {
-           input.askUserString();
-           cityName = input.getString();
-       } catch (WrongInputException e) {
-           System.err.println(language.getErrMessMap().get("WrongInputException"));
-           input.clear();
-           return;
-       }
-       print(language.getMap().get("startApp02"));
-       try {
-           input.askUserString();
-           country = input.getString();
-       } catch (WrongInputException e) {
-           System.err.println(language.getErrMessMap().get("WrongInputException"));
-           input.clear();
-           return;
-       }
-       initWeatherForecastProvider(cityName, country);
+        print(language.getMap().get("startApp01"));
+        String cityName;
+        String country;
+        try {
+            input.askUserString(scanner);
+            cityName = input.getString();
+        } catch (WrongInputException e) {
+            System.err.println(language.getErrMessMap().get("WrongInputException"));
+            input.clear();
+            return;
+        }
+        print(language.getMap().get("startApp02"));
+        try {
+            input.askUserString(scanner);
+            country = input.getString();
+        } catch (WrongInputException e) {
+            System.err.println(language.getErrMessMap().get("WrongInputException"));
+            input.clear();
+            return;
+        }
+        initWeatherForecastProvider(cityName, country);
     }
 
     public void initWeatherForecastProvider(String cityName, String country) {
@@ -118,7 +120,7 @@ public class WeatherApp {
             System.err.println(language.getErrMessMap().get("LocationNotFoundException"));
             return;
         } catch (InternalAPIConnectionException e) {
-            System.err.println(language.getErrMessMap().get("InternalServerException"));
+            System.err.println(language.getErrMessMap().get("InternalAPIConnectionException"));
             return;
         }
         printResult(provider.getWeatherList(locationFactory.buildLocation(coordinates, cityName)));
@@ -131,7 +133,7 @@ public class WeatherApp {
         while (!endCycle) {
             print(language.getMap().get("settings"));
             try {
-                input.askUserInt();
+                input.askUserInt(scanner);
                 switch (input.getInteger()) {
                     case 1 -> changeLanguage();
                     case 2 -> changeDays();
@@ -150,7 +152,7 @@ public class WeatherApp {
         while (!endCycle) {
             print(language.getMap().get("language"));
             try {
-                input.askUserInt();
+                input.askUserInt(scanner);
                 switch (input.getInteger()) {
                     case 1 -> {
                         settings.setLanguageSettings(LanguageSettings.ENGLISH);
@@ -181,7 +183,7 @@ public class WeatherApp {
     private void changeDays() {
         print(language.getMap().get("daysChange"));
         try {
-            input.askUserInt();
+            input.askUserInt(scanner);
             settings.setDays(input.getInteger());
         } catch (WrongInputException e) {
             System.err.println(language.getErrMessMap().get("WrongInputException"));
@@ -192,10 +194,10 @@ public class WeatherApp {
 
     private void changeScale() {
         boolean endCycle = false;
-        print(language.getMap().get("changeScale"));
         while (!endCycle) {
+            print(language.getMap().get("changeScale"));
             try {
-                input.askUserInt();
+                input.askUserInt(scanner);
                 switch (input.getInteger()) {
                     case 1 -> settings.setWeatherInfoSettings(WeatherInfoSettings.CELSIUS);
                     case 2 -> settings.setWeatherInfoSettings(WeatherInfoSettings.FAHRENHEIT);
@@ -205,12 +207,7 @@ public class WeatherApp {
                 System.err.println(language.getErrMessMap().get("WrongInputException"));
                 input.clear();
             }
-            print(language.getMap().get("successfulChange"))
+            print(language.getMap().get("successfulChange"));
         }
-    }
-//  Update methods
-
-    private void updateLanguage(LanguageSettings languageSettings) {
-
     }
 }

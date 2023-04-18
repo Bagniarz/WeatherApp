@@ -48,7 +48,7 @@ public class Geocoding {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
         if (response == null || response.body().length() < 3) {
             throw new LocationNotFoundException();
@@ -65,18 +65,18 @@ public class Geocoding {
                     .header("accept", "application/json")
                     .build();
         } catch (URISyntaxException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
         return request;
     }
 
     public Coordinates importCoordinates(String cityName, String country, String apiKey) throws LocationNotFoundException, InternalAPIConnectionException {
+        configureMapper();
         List<GeocodingResponseObj> list = createGeocodingResponse(getResponse(createRequest(cityName, country, apiKey)));
         if (list.isEmpty()) {
             throw new LocationNotFoundException();
         }
         CoordinatesFactory coordinatesFactory = new CoordinatesFactory();
-        System.out.println(list);
         return coordinatesFactory.buildCoordinates(list.get(0).getLatitude(), list.get(0).getLongitude());
     }
 

@@ -1,5 +1,6 @@
 package weatherAppCore.settings;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import weatherAppCore.exceptions.wrongInputException.components.DaysException;
 
@@ -7,8 +8,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SettingsTest {
-    SettingsFactory settingsFactory = new SettingsFactory();
-    Settings settings = settingsFactory.createDefaultSettings();
+    private final SettingsFactory settingsFactory = new SettingsFactory();
+    private Settings settings;
+
+    @BeforeEach
+    void reset() {
+        settings = settingsFactory.createDefaultSettings();
+    }
 
     @Test
     void testSetDays_ThrowsDaysException() {

@@ -7,6 +7,7 @@ import lombok.Value;
 import weatherAppCore.dataRetrieval.forecastResponse.ForecastResponse;
 import weatherAppCore.location.Location;
 import weatherAppCore.settings.Settings;
+import weatherAppCore.settings.WeatherInfoSettings;
 import weatherAppCore.weather.Weather;
 import weatherAppCore.weather.WeatherBuilder;
 
@@ -86,9 +87,8 @@ public class WeatherForecastProvider {
                     forecastResponse.getDaily().getPrecipitation().get(i),
                     forecastResponse.getDaily().getTemperature().get(i),
                     forecastResponse.getDaily().getWindspeed().get(i),
-                    forecastResponse.getDailyUnits(),
-                    "°C",
-                    false);
+                    forecastResponse.getDailyUnits());
+            if (settings.getWeatherInfoSettings() == WeatherInfoSettings.FAHRENHEIT) weather.changeScale(settings.getWeatherInfoSettings());
             list.add(weather);
         }
         return list;

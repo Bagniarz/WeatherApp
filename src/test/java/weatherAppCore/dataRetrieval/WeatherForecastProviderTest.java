@@ -10,18 +10,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class WeatherForecastProviderTest {
+
+    private final SettingsFactory factory = new SettingsFactory();
+    private final ObjectMapper mapper = new ObjectMapper();
+
     @Test
     void testGetWeatherList_NotNull() {
-        SettingsFactory factory = new SettingsFactory();
-        ObjectMapper mapper = new ObjectMapper();
         WeatherForecastProvider provider = new WeatherForecastProvider(factory.createDefaultSettings(), mapper);
         assertNotNull(provider.getWeatherList(new Location(new Coordinates(52, 21), "TEST")));
     }
 
     @Test
     void testGetWeatherList_NotEmpty_False() {
-        SettingsFactory factory = new SettingsFactory();
-        ObjectMapper mapper = new ObjectMapper();
         WeatherForecastProvider provider = new WeatherForecastProvider(factory.createDefaultSettings(), mapper);
         assertFalse(provider.getWeatherList(new Location(new Coordinates(52, 21), "TEST")).isEmpty());
     }

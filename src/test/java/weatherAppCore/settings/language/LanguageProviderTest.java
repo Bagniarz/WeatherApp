@@ -1,7 +1,6 @@
 package weatherAppCore.settings.language;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Value;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,12 +12,11 @@ import java.io.PrintStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Value
 class LanguageProviderTest {
 
-    PrintStream standardOut = System.out;
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    ObjectMapper mapper = new ObjectMapper();
+    private final PrintStream standardOut = System.out;
+    private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
     public void setUp() {

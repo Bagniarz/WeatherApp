@@ -13,8 +13,9 @@
   "settings": [
     "1.Change language",
     "2.Change days to forecast",
-    "3.Manage favourite locations(WIP)",
-    "4.Back"
+    "3.Change scale",
+    "4.Manage favourite locations(WIP)",
+    "5.Back"
   ],
   "language": [
     "1.English",
@@ -23,6 +24,11 @@
   ],
   "daysChange": [
     "Min(1)-(16)Max"
+  ],
+  "changeScale": [
+    "1.°C",
+    "2.°F",
+    "3.Back"
   ],
   "startApp01": [
     "Enter the name of the city where you want to check the weather forecast"

@@ -1,68 +1,74 @@
 package weatherAppCore.weather;
 
 import org.junit.jupiter.api.Test;
+import weatherAppCore.dataRetrieval.forecastResponse.components.UnitInfo;
+import weatherAppCore.settings.Settings;
+import weatherAppCore.settings.SettingsFactory;
+import weatherAppCore.settings.WeatherInfoSettings;
+import weatherAppCore.settings.language.LanguageSettings;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WeatherTest {
 
+    private final SettingsFactory settingsFactory = new SettingsFactory();
+    private final Settings settingsCelsius = settingsFactory.createDefaultSettings();
+    private final Settings settingsFahrenheit = new Settings(WeatherInfoSettings.FAHRENHEIT, LanguageSettings.ENGLISH, 1);
+    private final WeatherBuilder weatherBuilder = new WeatherBuilder();
+
+
+
     @Test
     void changeScaleToCelsius() {
-        WeatherBuilder weatherBuilder = new WeatherBuilder();
         Weather weather = weatherBuilder.build("TEST","TEST", "TEST",
                 0, 0, -40, 0,
-                null, "°F", true);
-        weather.changeScale();
-        assertTrue(-40 == weather.getTemperature_2m_max() && "°C".equals(weather.getScale()));
+                UnitInfo.builder().temperature("°F").build());
+        weather.changeScale(settingsCelsius.getWeatherInfoSettings());
+        assertTrue(-40 == weather.getTemperature_2m_max() && "°C".equals(weather.getUnitInfo().getTemperature()));
     }
 
     @Test
     void changeScaleToFahrenheit() {
-        WeatherBuilder weatherBuilder = new WeatherBuilder();
         Weather weather = weatherBuilder.build("TEST","TEST", "TEST",
                 0, 0, -40, 0,
-                null, "°C", false);
-        weather.changeScale();
-        assertTrue(-40 == weather.getTemperature_2m_max() && "°F".equals(weather.getScale()));
+                UnitInfo.builder().temperature("°C").build());
+        weather.changeScale(settingsFahrenheit.getWeatherInfoSettings());
+        assertTrue(-40 == weather.getTemperature_2m_max() && "°F".equals(weather.getUnitInfo().getTemperature()));
     }
 
     @Test
     void changeScaleToFahrenheitTemperatureTestPositiveNumber() {
-        WeatherBuilder weatherBuilder = new WeatherBuilder();
         Weather weather = weatherBuilder.build("TEST","TEST", "TEST",
                 0, 0, 40, 0,
-                null, "°C", false);
-        weather.changeScale();
-        assertTrue(104 == weather.getTemperature_2m_max() && "°F".equals(weather.getScale()));
+                UnitInfo.builder().temperature("°C").build());
+        weather.changeScale(settingsFahrenheit.getWeatherInfoSettings());
+        assertTrue(104 == weather.getTemperature_2m_max() && "°F".equals(weather.getUnitInfo().getTemperature()));
     }
 
     @Test
     void changeScaleToFahrenheitTemperatureTestNegativeNumber() {
-        WeatherBuilder weatherBuilder = new WeatherBuilder();
         Weather weather = weatherBuilder.build("TEST","TEST", "TEST",
                 0, 0, -25, 0,
-                null, "°C", false);
-        weather.changeScale();
-        assertTrue(-13 == weather.getTemperature_2m_max() && "°F".equals(weather.getScale()));
+                UnitInfo.builder().temperature("°C").build());
+        weather.changeScale(settingsFahrenheit.getWeatherInfoSettings());
+        assertTrue(-13 == weather.getTemperature_2m_max() && "°F".equals(weather.getUnitInfo().getTemperature()));
     }
 
     @Test
     void changeScaleToCelsiusTemperatureTestPositiveNumber() {
-        WeatherBuilder weatherBuilder = new WeatherBuilder();
         Weather weather = weatherBuilder.build("TEST","TEST", "TEST",
                 0, 0, 32, 0,
-                null, "°C", true);
-        weather.changeScale();
-        assertTrue(0 == weather.getTemperature_2m_max() && "°C".equals(weather.getScale()));
+                UnitInfo.builder().temperature("°F").build());
+        weather.changeScale(settingsCelsius.getWeatherInfoSettings());
+        assertTrue(0 == weather.getTemperature_2m_max() && "°C".equals(weather.getUnitInfo().getTemperature()));
     }
 
     @Test
     void changeScaleToCelsiusTemperatureTestNegativeNumber() {
-        WeatherBuilder weatherBuilder = new WeatherBuilder();
         Weather weather = weatherBuilder.build("TEST","TEST", "TEST",
                 0, 0, -25, 0,
-                null, "°C", true);
-        weather.changeScale();
-        assertTrue(-31 == weather.getTemperature_2m_max() && "°C".equals(weather.getScale()));
+                UnitInfo.builder().temperature("°F").build());
+        weather.changeScale(settingsCelsius.getWeatherInfoSettings());
+        assertTrue(-31 == weather.getTemperature_2m_max() && "°C".equals(weather.getUnitInfo().getTemperature()));
     }
 }

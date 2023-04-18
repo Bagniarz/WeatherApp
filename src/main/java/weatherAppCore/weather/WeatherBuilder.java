@@ -10,14 +10,13 @@ import java.text.DecimalFormat;
 public class WeatherBuilder {
     public Weather build(String date, String sunrise, String sunset,
                          int weatherCode, int precipitation, double temperature,
-                         float windSpeed, UnitInfo unitInfo, String scale, boolean reversed) {
+                         float windSpeed, UnitInfo unitInfo) {
         DecimalFormat df = new DecimalFormat("#");
         df.setRoundingMode(RoundingMode.CEILING);
         return new Weather(date, sunrise, sunset,
                 weatherCode,
                 precipitation, Integer.parseInt(df.format(temperature)),
                 windSpeed,
-                unitInfo,
-                scale, reversed);
+                unitInfo);
     }
 }
