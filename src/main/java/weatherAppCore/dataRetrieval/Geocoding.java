@@ -8,6 +8,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import weatherAppCore.coordinates.Coordinates;
 import weatherAppCore.coordinates.CoordinatesFactory;
 import weatherAppCore.dataRetrieval.geocodingResponse.GeocodingResponseObj;
@@ -29,6 +31,7 @@ public class Geocoding {
     HttpClient client;
     String response;
     final ObjectMapper mapper;
+    private static final Logger logger = LogManager.getLogger();
 
     private List<GeocodingResponseObj> createGeocodingResponse(HttpResponse<String> response) throws LocationNotFoundException, InternalAPIConnectionException {
         List<GeocodingResponseObj> list;
@@ -48,6 +51,7 @@ public class Geocoding {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
+            logger.fatal(e);
             throw new RuntimeException(e);
         }
         if (response == null || response.body().length() < 3) {
@@ -65,6 +69,7 @@ public class Geocoding {
                     .header("accept", "application/json")
                     .build();
         } catch (URISyntaxException e) {
+            logger.fatal(e);
             throw new RuntimeException(e);
         }
         return request;

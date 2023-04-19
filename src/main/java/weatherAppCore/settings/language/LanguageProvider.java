@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import weatherAppCore.exceptions.LanguageImportFileException;
 
 import java.io.File;
@@ -20,6 +22,7 @@ import java.util.Objects;
 @FieldDefaults (level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class LanguageProvider {
+    private static final Logger logger = LogManager.getLogger();
     final ObjectMapper mapper;
 
     private List<File> getFile(List<String> resourcePath) {
@@ -30,6 +33,7 @@ public class LanguageProvider {
                 result.add(new File((Objects.requireNonNull(classLoader.getResource(element))).toURI()));
             }
         } catch (URISyntaxException e) {
+            logger.fatal(e);
             throw new RuntimeException();
         }
         return result;
@@ -61,6 +65,7 @@ public class LanguageProvider {
             Map<String, String> map03 = mapper.readValue(files.get(2), new TypeReference<>() {});
             return new Language(map01, map02, map03, languageSettings);
         } catch (IOException e) {
+            logger.fatal(e);
             throw new LanguageImportFileException(e);
         }
     }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Value;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import weatherAppCore.dataRetrieval.forecastResponse.ForecastResponse;
 import weatherAppCore.location.Location;
 import weatherAppCore.settings.Settings;
@@ -26,6 +28,7 @@ public class WeatherForecastProvider {
     HttpClient client;
     Settings settings;
     ObjectMapper mapper;
+    private static final Logger logger = LogManager.getLogger();
 
     public WeatherForecastProvider(Settings settings, ObjectMapper mapper) {
         this(HttpClient.newHttpClient(), settings, mapper);
@@ -43,6 +46,7 @@ public class WeatherForecastProvider {
         try {
             forecastResponse = mapper.readValue(response.body(), ForecastResponse.class);
         } catch (JsonProcessingException e) {
+            logger.fatal(e);
             throw new RuntimeException(e);
         }
         return forecastResponse;
@@ -53,6 +57,7 @@ public class WeatherForecastProvider {
         try {
             response = client.send(createRequest(location), HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
+            logger.fatal(e);
             throw new RuntimeException(e);
         }
         return response;
@@ -69,6 +74,7 @@ public class WeatherForecastProvider {
                             "&forecast_days=" + settings.getDays() + "&timezone=auto"))
                     .build();
         } catch (URISyntaxException e) {
+            logger.fatal(e);
             throw new RuntimeException(e);
         }
         return request;
