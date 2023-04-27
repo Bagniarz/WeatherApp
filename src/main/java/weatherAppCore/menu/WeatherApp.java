@@ -22,10 +22,10 @@ import weatherAppCore.settings.language.LanguageSettings;
 import weatherAppCore.userInput.UserInput;
 import weatherAppCore.weather.Weather;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Scanner;
 
-//  TODO Rework exceptions using log4j
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
@@ -37,22 +37,28 @@ public class WeatherApp {
     final LanguageProvider languageProvider;
     Language language;
     final Scanner scanner = new Scanner(System.in);
-    private static final Logger logger = LogManager.getLogger();
+    final PrintStream printOut;
+    final PrintStream printErr;
+    private static final Logger logger = LogManager.getLogger(WeatherApp.class);
 
+// TODO Method that gives to System.out string to print
+// TODO Refactor logger
+// TODO Read about Hamcrest
+// TODO Rework Tests
 
 //  Printer with translator
 
-    private void print(List<String> list) {
-        list.forEach(System.out::println);
+    public void print(List<String> list) {
+        list.forEach(printOut::println);
     }
 
-    private void printResult(List<Weather> list) {
+    public void printResult(List<Weather> list) {
         for (Weather weather : list) {
-            System.out.println(getTranslation(weather));
+            printOut.println(getTranslation(weather));
         }
     }
 
-    private String getTranslation(Weather weather) {
+    public String getTranslation(Weather weather) {
         String endString = ". ";
         return language.getMap().get("result").get(0) +
                 " {" +
@@ -82,8 +88,8 @@ public class WeatherApp {
                     default -> endApp = true;
                 }
             } catch (WrongInputException e) {
-//                System.err.println(language.getErrMessMap().get("WrongInputException"));
-                logger.info(language.getErrMessMap().get("WrongInputException"));
+                printErr.println(language.getErrMessMap().get("WrongInputException"));
+                logger.debug(e);
                 input.clear();
             }
         }
@@ -99,8 +105,8 @@ public class WeatherApp {
             input.askUserString(scanner);
             cityName = input.getString();
         } catch (WrongInputException e) {
-//            System.err.println(language.getErrMessMap().get("WrongInputException"));
-            logger.info(language.getErrMessMap().get("WrongInputException"));
+            printErr.println(language.getErrMessMap().get("WrongInputException"));
+            logger.debug(e);
             input.clear();
             return;
         }
@@ -109,8 +115,8 @@ public class WeatherApp {
             input.askUserString(scanner);
             country = input.getString();
         } catch (WrongInputException e) {
-//            System.err.println(language.getErrMessMap().get("WrongInputException"));
-            logger.info(language.getErrMessMap().get("WrongInputException"));
+            printErr.println(language.getErrMessMap().get("WrongInputException"));
+            logger.debug(e);
             input.clear();
             return;
         }
@@ -122,13 +128,13 @@ public class WeatherApp {
         LocationFactory locationFactory = new LocationFactory();
         try {
             coordinates = geocoding.importCoordinates(cityName, country, settings.getProp().get("apiKey").toString());
-        } catch (LocationNotFoundException exception) {
-//            System.err.println(language.getErrMessMap().get("LocationNotFoundException"));
-            logger.info(language.getErrMessMap().get("LocationNotFoundException"));
+        } catch (LocationNotFoundException e) {
+            printErr.println(language.getErrMessMap().get("LocationNotFoundException"));
+            logger.debug(e);
             return;
         } catch (InternalAPIConnectionException e) {
-//            System.err.println(language.getErrMessMap().get("InternalAPIConnectionException"));
-            logger.info(language.getErrMessMap().get("InternalAPIConnectionException"));
+            printErr.println(language.getErrMessMap().get("InternalAPIConnectionException"));
+            logger.debug(e);
             return;
         }
         printResult(provider.getWeatherList(locationFactory.buildLocation(coordinates, cityName)));
@@ -136,7 +142,7 @@ public class WeatherApp {
 
 //  Settings
 
-    private void changeSettingsMenu() {
+    public void changeSettingsMenu() {
         boolean endCycle = false;
         while (!endCycle) {
             print(language.getMap().get("settings"));
@@ -149,14 +155,14 @@ public class WeatherApp {
                     default -> endCycle = true;
                 }
             } catch (WrongInputException e) {
-//                System.err.println(language.getErrMessMap().get("WrongInputException"));
-                logger.info(language.getErrMessMap().get("WrongInputException"));
+                printOut.println(language.getErrMessMap().get("WrongInputException"));
+                logger.debug(e);
                 input.clear();
             }
         }
     }
 
-    private void changeLanguage() {
+    public void changeLanguage() {
         boolean endCycle = false;
         while (!endCycle) {
             print(language.getMap().get("language"));
@@ -168,7 +174,8 @@ public class WeatherApp {
                         try {
                             setLanguage(languageProvider.importLanguage(settings.getLanguageSettings()));
                         } catch (LanguageImportFileException e) {
-                            logger.fatal(language.getErrMessMap().get("LanguageImportFileException"), e);
+                            printErr.println(language.getErrMessMap().get("LanguageImportFileException"));
+                            logger.fatal(e);
                             throw new RuntimeException(e);
                         }
                     }
@@ -177,14 +184,15 @@ public class WeatherApp {
                         try {
                             setLanguage(languageProvider.importLanguage(settings.getLanguageSettings()));
                         } catch (LanguageImportFileException e) {
-                            logger.fatal(language.getErrMessMap().get("LanguageImportFileException"), e);
+                            printOut.println(language.getErrMessMap().get("LanguageImportFileException"));
+                            logger.warn(e);
                             throw new RuntimeException(e);
                         }
                     }
                     default -> endCycle = true;
                 }
             } catch (WrongInputException e) {
-//                System.err.println(language.getErrMessMap().get("WrongInputException"));
+                printOut.println(language.getErrMessMap().get("WrongInputException"));
                 logger.info(language.getErrMessMap().get("WrongInputException"));
                 input.clear();
             }
@@ -192,20 +200,20 @@ public class WeatherApp {
         }
     }
 
-    private void changeDays() {
+    public void changeDays() {
         print(language.getMap().get("daysChange"));
         try {
             input.askUserInt(scanner);
             settings.setDays(input.getInteger());
         } catch (WrongInputException e) {
-//            System.err.println(language.getErrMessMap().get("WrongInputException"));
-            logger.info(language.getErrMessMap().get("WrongInputException"));
+            printOut.println(language.getErrMessMap().get("WrongInputException"));
+            logger.debug(e);
             input.clear();
         }
         print(language.getMap().get("successfulChange"));
     }
 
-    private void changeScale() {
+    public void changeScale() {
         boolean endCycle = false;
         while (!endCycle) {
             print(language.getMap().get("changeScale"));
@@ -217,8 +225,8 @@ public class WeatherApp {
                     default -> endCycle = true;
                 }
             } catch (WrongInputException e) {
-//                System.err.println(language.getErrMessMap().get("WrongInputException"));
-                logger.info(language.getErrMessMap().get("WrongInputException"));
+                printOut.println(language.getErrMessMap().get("WrongInputException"));
+                logger.debug(e);
                 input.clear();
             }
             print(language.getMap().get("successfulChange"));

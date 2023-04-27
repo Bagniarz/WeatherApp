@@ -10,6 +10,7 @@ import weatherAppCore.settings.language.LanguageProvider;
 import weatherAppCore.settings.language.LanguageSettings;
 import weatherAppCore.userInput.UserInput;
 
+import java.io.PrintStream;
 import java.net.http.HttpClient;
 
 public class WeatherAppInitializer {
@@ -30,7 +31,9 @@ public class WeatherAppInitializer {
                             .build(),
                     new WeatherForecastProvider(settings, mapper),
                     languageProvider,
-                    languageProvider.importLanguage(LanguageSettings.ENGLISH));
+                    languageProvider.importLanguage(LanguageSettings.ENGLISH),
+                    new PrintStream(System.out),
+                    new PrintStream(System.err));
         } catch (LanguageImportFileException e) {
             throw new RuntimeException();
         }
