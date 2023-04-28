@@ -5,17 +5,32 @@
   "successfulChange": [
     "Change approved"
   ],
+  "savedSuccessful" : [
+    "Saved Successfully"
+  ],
   "mainMenu": [
     "1.Start",
-    "2.Settings",
-    "3.Quit"
+    "2.Manage Favourite Locations",
+    "3.Settings",
+    "4.Quit"
+  ],
+  "favouriteLocations": [
+    "1. Show Current Saved Locations",
+    "2. Remove Saved Location",
+    "3. Back"
+  ],
+  "removeLocation" : [
+    "Choose which location you want to delete"
+  ],
+  "addLocation" : [
+    "1. Save location",
+    "2. Back"
   ],
   "settings": [
     "1.Change language",
     "2.Change days to forecast",
     "3.Change scale",
-    "4.Manage favourite locations(WIP)",
-    "5.Back"
+    "4.Back"
   ],
   "language": [
     "1.English",

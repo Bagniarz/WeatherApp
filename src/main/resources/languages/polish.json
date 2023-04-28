@@ -5,17 +5,35 @@
   "successfulChange": [
     "Zmiana zatwierdzona"
   ],
+  "savedSuccessful" : [
+    "Zapisano Pomyślnie"
+  ],
   "mainMenu": [
     "1.Rozpocznij",
-    "2.Ustawienia",
-    "3.Wyjdź"
+    "2.Zarządzaj ulubionymi lokacjami",
+    "3.Ustawienia",
+    "4.Wyjdź"
+  ],
+  "newOrSaved": [
+
+  ],
+  "favouriteLocations": [
+    "1. Pokaż zapisane ulubione lokacje",
+    "2. Usuń zapisaną lokacje",
+    "3. Wróc"
+  ],
+  "removeLocation" : [
+    "Wybierz która lokacje chcesz usunąć"
+  ],
+  "addLocation" : [
+    "1. Zapisz Lokacje",
+    "2. Wróc"
   ],
   "settings": [
     "1.Zmień język",
     "2.Zmień ilość dni do prognozy pogody",
     "3.Zmień skalę",
-    "4.Zmień ulubione miejsca(WIP)",
-    "5.Back"
+    "4.Wróc"
   ],
   "language": [
     "1.English",
@@ -28,7 +46,7 @@
   "changeScale": [
     "1.°C",
     "2.°F",
-    "3.Back"
+    "3.Wróc"
   ],
   "startApp01": [
     "Wpisz nazwę miasta w którym chcesz sprawdzić prognozę pogody"

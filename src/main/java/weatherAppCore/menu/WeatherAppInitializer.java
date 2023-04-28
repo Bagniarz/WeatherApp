@@ -1,19 +1,28 @@
 package weatherAppCore.menu;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import weatherAppCore.dataRetrieval.Geocoding;
 import weatherAppCore.dataRetrieval.WeatherForecastProvider;
 import weatherAppCore.exceptions.LanguageImportFileException;
+import weatherAppCore.location.savedLocations.FavouriteLocations;
+import weatherAppCore.location.savedLocations.FavouriteLocationsProvider;
+import weatherAppCore.location.savedLocations.FavouriteLocationsSaver;
 import weatherAppCore.settings.Settings;
 import weatherAppCore.settings.SettingsFactory;
 import weatherAppCore.settings.language.LanguageProvider;
 import weatherAppCore.settings.language.LanguageSettings;
 import weatherAppCore.userInput.UserInput;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.http.HttpClient;
 
 public class WeatherAppInitializer {
+
+    private static final Logger logger = LogManager.getLogger(WeatherAppInitializer.class);
 
     public static WeatherApp initAppConfiguration() {
         SettingsFactory settingsFactory = new SettingsFactory();
@@ -21,6 +30,7 @@ public class WeatherAppInitializer {
         LanguageProvider languageProvider = new LanguageProvider(mapper);
         Settings settings = settingsFactory.createDefaultSettings();
         WeatherApp weatherApp;
+        FavouriteLocationsProvider provider = new FavouriteLocationsProvider(mapper);
         try {
             weatherApp = new WeatherApp(settings,
                     UserInput.builder()
@@ -33,9 +43,13 @@ public class WeatherAppInitializer {
                     languageProvider,
                     languageProvider.importLanguage(LanguageSettings.ENGLISH),
                     new PrintStream(System.out),
-                    new PrintStream(System.err));
-        } catch (LanguageImportFileException e) {
-            throw new RuntimeException();
+                    new PrintStream(System.err),
+                    new FavouriteLocations(provider.createMap(new File("src/main/java/weatherAppCore/location/savedLocations/savedLocationsStorage/savedLocations.json"))),
+                    provider,
+                    new FavouriteLocationsSaver(mapper));
+        } catch (LanguageImportFileException | IOException e) {
+            logger.fatal(e);
+            throw new RuntimeException(e);
         }
         return weatherApp;
     }

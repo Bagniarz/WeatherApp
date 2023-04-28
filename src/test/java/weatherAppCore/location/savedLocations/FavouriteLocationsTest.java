@@ -28,11 +28,15 @@ class FavouriteLocationsTest {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(20,20), "Test01");
         Location test02 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(21,21), "Test02");
         Location test03 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(22,22), "Test03");
-        Location testAdd = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(23,23), "Test04");
+        Location test04 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(22,22), "Test04");
+        Location test05 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(22,22), "Test05");
+
+        Location testAdd = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(23,23), "Test06");
         favouriteLocations.getMap().put("Test01", test01);
         favouriteLocations.getMap().put("Test02", test02);
         favouriteLocations.getMap().put("Test03", test03);
-
+        favouriteLocations.getMap().put("Test04", test04);
+        favouriteLocations.getMap().put("Test05", test05);
 
         assertThrows(MaximumCapacityException.class, () -> favouriteLocations.addLocation(testAdd));
     }

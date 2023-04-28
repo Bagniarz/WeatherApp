@@ -13,7 +13,11 @@ import weatherAppCore.exceptions.InternalAPIConnectionException;
 import weatherAppCore.exceptions.LanguageImportFileException;
 import weatherAppCore.exceptions.wrongInputException.WrongInputException;
 import weatherAppCore.exceptions.wrongInputException.components.LocationNotFoundException;
+import weatherAppCore.location.Location;
 import weatherAppCore.location.LocationFactory;
+import weatherAppCore.location.savedLocations.FavouriteLocations;
+import weatherAppCore.location.savedLocations.FavouriteLocationsProvider;
+import weatherAppCore.location.savedLocations.FavouriteLocationsSaver;
 import weatherAppCore.settings.Settings;
 import weatherAppCore.settings.WeatherInfoSettings;
 import weatherAppCore.settings.language.Language;
@@ -39,6 +43,9 @@ public class WeatherApp {
     final Scanner scanner = new Scanner(System.in);
     final PrintStream printOut;
     final PrintStream printErr;
+    final FavouriteLocations locations;
+    final FavouriteLocationsProvider locationsProvider;
+    final FavouriteLocationsSaver saver;
     private static final Logger logger = LogManager.getLogger(WeatherApp.class);
 
 // TODO Method that gives to System.out string to print
@@ -82,8 +89,9 @@ public class WeatherApp {
             try {
                 input.askUserInt(scanner);
                 switch (input.getInteger()) {
-                    case 1 -> startWeatherForecasting();
-                    case 2 -> changeSettingsMenu();
+                    case 1 -> askUserNewOrSavedLocation();
+                    case 2 -> manageFavouriteLocations();
+                    case 3 -> changeSettingsMenu();
                     case 10 -> System.out.println(settings);
                     default -> endApp = true;
                 }
@@ -97,30 +105,69 @@ public class WeatherApp {
 
 //  WeatherForecasting
 
-    public void startWeatherForecasting() {
-        print(language.getMap().get("startApp01"));
-        String cityName;
-        String country;
-        try {
-            input.askUserString(scanner);
-            cityName = input.getString();
-        } catch (WrongInputException e) {
-            printErr.println(language.getErrMessMap().get("WrongInputException"));
-            logger.debug(e);
-            input.clear();
-            return;
+    public void askUserNewOrSavedLocation() {
+        boolean endCycle = false;
+        print(language.getMap().get("newOrSaved"));
+        if (locations.getMap().isEmpty()) startWeatherForecasting(false);
+        while (!endCycle) {
+            try {
+                input.askUserInt(scanner);
+                switch (input.getInteger()) {
+                    case 1 -> startWeatherForecasting(false);
+                    case 2 -> {
+                        showFavouriteLocationsMap();
+                        startWeatherForecasting(true);
+                    }
+                    default -> endCycle = true;
+                }
+            } catch (WrongInputException e) {
+                printErr.println(language.getErrMessMap().get("WrongInputException"));
+                logger.debug(e);
+                input.clear();
+                return;
+            }
         }
-        print(language.getMap().get("startApp02"));
-        try {
-            input.askUserString(scanner);
-            country = input.getString();
-        } catch (WrongInputException e) {
-            printErr.println(language.getErrMessMap().get("WrongInputException"));
-            logger.debug(e);
-            input.clear();
-            return;
+    }
+
+    public void startWeatherForecasting(boolean saved) {
+        if (!saved) {
+            print(language.getMap().get("startApp01"));
+            String cityName;
+            String country;
+            try {
+                input.askUserString(scanner);
+                cityName = input.getString();
+            } catch (WrongInputException e) {
+                printErr.println(language.getErrMessMap().get("WrongInputException"));
+                logger.debug(e);
+                input.clear();
+                return;
+            }
+            print(language.getMap().get("startApp02"));
+            try {
+                input.askUserString(scanner);
+                country = input.getString();
+            } catch (WrongInputException e) {
+                printErr.println(language.getErrMessMap().get("WrongInputException"));
+                logger.debug(e);
+                input.clear();
+                return;
+            }
+            initWeatherForecastProvider(cityName, country);
+        } else {
+            Location location = askUserWhichLocation();
+            initWeatherForecastProvider(location.getCityName(), "");
         }
-        initWeatherForecastProvider(cityName, country);
+    }
+
+    public Location askUserWhichLocation() {
+        boolean endCycle = false;
+        while (!endCycle) {
+            showFavouriteLocationsMap();
+            try {
+
+            }
+        }
     }
 
     public void initWeatherForecastProvider(String cityName, String country) {
@@ -137,7 +184,61 @@ public class WeatherApp {
             logger.debug(e);
             return;
         }
-        printResult(provider.getWeatherList(locationFactory.buildLocation(coordinates, cityName)));
+        List<Weather> result = provider.getWeatherList(locationFactory.buildLocation(coordinates, cityName));
+        printResult(result);
+        askUserAboutResult(result.get(0));
+    }
+
+    public void askUserAboutResult(Weather weather) {
+        boolean endCycle = false;
+        print(language.getMap().get("addLocation"));
+        while (!endCycle) {
+            try {
+                input.askUserInt(scanner);
+                if (input.getInteger() == 1) {
+                    addLocationToMap(weather);
+                    print(language.getMap().get("savedSuccessful"));
+                    endCycle = true;
+                } else {
+                    endCycle = true;
+                }
+            } catch (WrongInputException e) {
+                printErr.println(language.getErrMessMap().get("WrongInputException"));
+                logger.debug(e);
+                input.clear();
+            }
+        }
+    }
+
+//  FavouriteLocation
+    public void addLocationToMap(Weather weather) {
+
+    }
+    public void manageFavouriteLocations() {
+        boolean endCycle = false;
+        while (!endCycle) {
+            print(language.getMap().get("favouriteLocations"));
+            try {
+                input.askUserInt(scanner);
+                switch (input.getInteger()) {
+                    case 1 -> showFavouriteLocationsMap();
+                    case 2 -> removeLocationFromMap();
+                    default -> endCycle = true;
+                }
+            } catch (WrongInputException e) {
+                printOut.println(language.getErrMessMap().get("WrongInputException"));
+                logger.debug(e);
+                input.clear();
+            }
+        }
+    }
+
+    public void showFavouriteLocationsMap() {
+        printOut.print(locations.getMap());
+    }
+
+    public void removeLocationFromMap() {
+
     }
 
 //  Settings
