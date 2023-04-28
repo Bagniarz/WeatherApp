@@ -3,5 +3,7 @@
   "WrongInputException": "Wrong Input!",
   "LocationNotFoundException": "Location not found!",
   "InternalServerException": "Geocoding server failure! Try again",
-  "LangaugeImportFileException": "No language files found!"
+  "LangaugeImportFileException": "No language files found!",
+  "DuplicateLocationException": "This location is already saved!",
+  "MaximumCapacityException": "Maximum capacity reached"
 }
