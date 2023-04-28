@@ -32,6 +32,7 @@ public class Settings {
         this.days = days;
     }
 
+//    TODO Add exception to missing API Key
     public Properties loadConfig() {
         String configFilePath = "src/main/java/weatherAppCore/settings/apiStorage/WeatherApp.properties";
         Properties properties = new Properties();

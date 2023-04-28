@@ -1,7 +1,9 @@
 {
-  "DaysException": "Forecasting days cannot be lower than 1 and higher than 16!",
+  "DaysException": "Days cannot be lower than 1 and higher than 16!",
   "WrongInputException": "Wrong Input!",
   "LocationNotFoundException": "Location not found!",
-  "InternalAPIConnectionException": "Geocoding server failure! Try again",
-  "LangaugeImportFileException": "No language files found!"
+  "InternalServerException": "Geocoding server failure! Try again",
+  "LangaugeImportFileException": "No language files found!",
+  "DuplicateLocationException": "This location is already saved!",
+  "MaximumCapacityException": "Maximum capacity reached"
 }
