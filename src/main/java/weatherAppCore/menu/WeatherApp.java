@@ -9,8 +9,7 @@ import org.apache.logging.log4j.Logger;
 import weatherAppCore.coordinates.Coordinates;
 import weatherAppCore.dataRetrieval.Geocoding;
 import weatherAppCore.dataRetrieval.WeatherForecastProvider;
-import weatherAppCore.exceptions.InternalAPIConnectionException;
-import weatherAppCore.exceptions.LanguageImportFileException;
+import weatherAppCore.exceptions.*;
 import weatherAppCore.exceptions.wrongInputException.WrongInputException;
 import weatherAppCore.exceptions.wrongInputException.components.LocationNotFoundException;
 import weatherAppCore.location.Location;
@@ -26,6 +25,8 @@ import weatherAppCore.settings.language.LanguageSettings;
 import weatherAppCore.userInput.UserInput;
 import weatherAppCore.weather.Weather;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Scanner;
@@ -82,6 +83,7 @@ public class WeatherApp {
 //  WeatherApp Merging all core methods
 
     public void startAppMenu() {
+        loadFavouriteLocations();
         boolean endApp = false;
         print(language.getMap().get("welcome"));
         while (!endApp) {
@@ -89,32 +91,38 @@ public class WeatherApp {
             try {
                 input.askUserInt(scanner);
                 switch (input.getInteger()) {
-                    case 1 -> askUserNewOrSavedLocation();
+                    case 1 -> initWeatherForecast();
                     case 2 -> manageFavouriteLocations();
                     case 3 -> changeSettingsMenu();
-                    case 10 -> System.out.println(settings);
-                    default -> endApp = true;
+                    case 10 -> printOut.print(settings);
+                    default -> {
+                        endApp = true;
+                        saveFavouriteLocations();
+                    }
                 }
-            } catch (WrongInputException e) {
-                printErr.println(language.getErrMessMap().get("WrongInputException"));
-                logger.debug(e);
-                input.clear();
+            } catch (WrongInputException e){
+            printErr.println(language.getErrMessMap().get("WrongInputException"));
+            logger.debug(e);
+            input.clear();
             }
         }
     }
 
 //  WeatherForecasting
 
-    public void askUserNewOrSavedLocation() {
+    public void initWeatherForecast() {
         boolean endCycle = false;
-        print(language.getMap().get("newOrSaved"));
-        if (locations.getMap().isEmpty()) startWeatherForecasting(false);
         while (!endCycle) {
+            print(language.getMap().get("initWeatherForecast"));
             try {
                 input.askUserInt(scanner);
                 switch (input.getInteger()) {
                     case 1 -> startWeatherForecasting(false);
                     case 2 -> {
+                        if (locations == null || locations.getMap() == null || locations.getMap().isEmpty()) {
+                            printOut.println(language.getErrMessMap().get("EmptyMapException"));
+                            return;
+                        }
                         showFavouriteLocationsMap();
                         startWeatherForecasting(true);
                     }
@@ -125,6 +133,10 @@ public class WeatherApp {
                 logger.debug(e);
                 input.clear();
                 return;
+            } catch (EmptyMapException e) {
+                printErr.println(language.getErrMessMap().get("EmptyMapException"));
+                logger.debug(e);
+                input.clear();
             }
         }
     }
@@ -155,19 +167,29 @@ public class WeatherApp {
             }
             initWeatherForecastProvider(cityName, country);
         } else {
-            Location location = askUserWhichLocation();
+            Location location = chooseLocationFromMap();
+            if (location == null) {
+                printErr.println(language.getErrMessMap().get("WrongLocationInput"));
+                return;
+            }
             initWeatherForecastProvider(location.getCityName(), "");
         }
     }
 
-    public Location askUserWhichLocation() {
-        boolean endCycle = false;
-        while (!endCycle) {
+    public Location chooseLocationFromMap() {
+        try {
             showFavouriteLocationsMap();
-            try {
-
-            }
+            input.askUserInt(scanner);
+        } catch (EmptyMapException e) {
+            printErr.println(language.getErrMessMap().get("EmptyMapException"));
+            input.clear();
+            logger.debug(e);
+        } catch (WrongInputException e) {
+            printErr.println(language.getErrMessMap().get("WrongInputException"));
+            input.clear();
+            logger.debug(e);
         }
+        return locations.getMap().get(input.getInteger());
     }
 
     public void initWeatherForecastProvider(String cityName, String country) {
@@ -184,35 +206,49 @@ public class WeatherApp {
             logger.debug(e);
             return;
         }
-        List<Weather> result = provider.getWeatherList(locationFactory.buildLocation(coordinates, cityName));
+        Location location = locationFactory.buildLocation(coordinates, cityName);
+        List<Weather> result = provider.getWeatherList(location);
         printResult(result);
-        askUserAboutResult(result.get(0));
+        askUserSaveLocation(location);
     }
 
-    public void askUserAboutResult(Weather weather) {
-        boolean endCycle = false;
+    public void askUserSaveLocation(Location location) {
+        printOut.println(location);
         print(language.getMap().get("addLocation"));
-        while (!endCycle) {
-            try {
-                input.askUserInt(scanner);
-                if (input.getInteger() == 1) {
-                    addLocationToMap(weather);
-                    print(language.getMap().get("savedSuccessful"));
-                    endCycle = true;
-                } else {
-                    endCycle = true;
-                }
-            } catch (WrongInputException e) {
-                printErr.println(language.getErrMessMap().get("WrongInputException"));
-                logger.debug(e);
-                input.clear();
+        try {
+            input.askUserInt(scanner);
+            if (input.getInteger() == 1) {
+                addLocationToMap(location);
+                print(language.getMap().get("savedSuccessful"));
             }
+        } catch (WrongInputException e) {
+            printErr.println(language.getErrMessMap().get("WrongInputException"));
+            logger.debug(e);
+            input.clear();
+        } catch (MaximumCapacityException e) {
+            printErr.println(language.getErrMessMap().get("MaximumCapacityException"));
+            logger.debug(e);
+            input.clear();
+        } catch (DuplicateLocationException e) {
+            printErr.println(language.getErrMessMap().get("DuplicateLocationException"));
+            logger.debug(e);
+            input.clear();
         }
     }
 
 //  FavouriteLocation
-    public void addLocationToMap(Weather weather) {
 
+    public void loadFavouriteLocations() {
+        try {
+            locations.setMap(locationsProvider.createMap
+                    (new File("src/main/java/weatherAppCore/location/savedLocations/savedLocationsStorage/savedLocations.json")));
+        } catch (IOException ignored) {
+//         it's for ignoring empty file savedLocations.json
+        }
+    }
+
+    public void addLocationToMap(Location location) throws MaximumCapacityException, DuplicateLocationException {
+            locations.addLocation(location);
     }
     public void manageFavouriteLocations() {
         boolean endCycle = false;
@@ -226,19 +262,47 @@ public class WeatherApp {
                     default -> endCycle = true;
                 }
             } catch (WrongInputException e) {
-                printOut.println(language.getErrMessMap().get("WrongInputException"));
+                printErr.println(language.getErrMessMap().get("WrongInputException"));
+                logger.debug(e);
+                input.clear();
+            } catch (EmptyMapException e) {
+                printErr.println(language.getErrMessMap().get("EmptyMapException"));
                 logger.debug(e);
                 input.clear();
             }
         }
     }
 
-    public void showFavouriteLocationsMap() {
-        printOut.print(locations.getMap());
+    public void showFavouriteLocationsMap() throws EmptyMapException {
+        if (locations == null || locations.getMap() == null || locations.getMap().isEmpty()) throw new EmptyMapException();
+        printOut.println(locations.getMap());
     }
 
     public void removeLocationFromMap() {
+        printOut.println(language.getMap().get("removeLocation"));
+        try {
+            showFavouriteLocationsMap();
+            input.askUserInt(scanner);
+            locations.removeLocation(input.getInteger());
+        } catch (EmptyMapException e) {
+            printErr.println(language.getErrMessMap().get("EmptyMapException"));
+            logger.debug(e);
+            input.clear();
+        } catch (WrongInputException e) {
+            printOut.println(language.getErrMessMap().get("WrongInputException"));
+            logger.debug(e);
+            input.clear();
+        }
+    }
 
+    public void saveFavouriteLocations() {
+        try {
+            saver.createJSONFile(locations.getMap(),
+                    new File("src/main/java/weatherAppCore/location/savedLocations/savedLocationsStorage/savedLocations.json"));
+        } catch (IOException e) {
+            logger.fatal(e);
+            throw new RuntimeException(e);
+        }
     }
 
 //  Settings
@@ -276,6 +340,7 @@ public class WeatherApp {
                             setLanguage(languageProvider.importLanguage(settings.getLanguageSettings()));
                         } catch (LanguageImportFileException e) {
                             printErr.println(language.getErrMessMap().get("LanguageImportFileException"));
+                            saveFavouriteLocations();
                             logger.fatal(e);
                             throw new RuntimeException(e);
                         }
@@ -286,7 +351,8 @@ public class WeatherApp {
                             setLanguage(languageProvider.importLanguage(settings.getLanguageSettings()));
                         } catch (LanguageImportFileException e) {
                             printOut.println(language.getErrMessMap().get("LanguageImportFileException"));
-                            logger.warn(e);
+                            saveFavouriteLocations();
+                            logger.fatal(e);
                             throw new RuntimeException(e);
                         }
                     }

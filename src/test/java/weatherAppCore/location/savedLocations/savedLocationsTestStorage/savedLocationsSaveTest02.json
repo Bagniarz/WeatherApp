@@ -1,1 +1,1 @@
-{"Test02":{"coordinates":{"latitude":23.2,"longitude":-28.3},"cityName":"Test02"},"Test03":{"coordinates":{"latitude":27.02,"longitude":28.3},"cityName":"Test03"},"Test01":{"coordinates":{"latitude":25.02,"longitude":28.3},"cityName":"Test01"}}
+{"1":{"coordinates":{"latitude":25.02,"longitude":28.3},"cityName":"Test01"},"2":{"coordinates":{"latitude":23.2,"longitude":-28.3},"cityName":"Test02"},"3":{"coordinates":{"latitude":27.02,"longitude":28.3},"cityName":"Test03"}}

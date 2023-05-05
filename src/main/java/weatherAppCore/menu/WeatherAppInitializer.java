@@ -15,10 +15,9 @@ import weatherAppCore.settings.language.LanguageProvider;
 import weatherAppCore.settings.language.LanguageSettings;
 import weatherAppCore.userInput.UserInput;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.net.http.HttpClient;
+import java.util.LinkedHashMap;
 
 public class WeatherAppInitializer {
 
@@ -44,10 +43,10 @@ public class WeatherAppInitializer {
                     languageProvider.importLanguage(LanguageSettings.ENGLISH),
                     new PrintStream(System.out),
                     new PrintStream(System.err),
-                    new FavouriteLocations(provider.createMap(new File("src/main/java/weatherAppCore/location/savedLocations/savedLocationsStorage/savedLocations.json"))),
+                    new FavouriteLocations(new LinkedHashMap<>()),
                     provider,
                     new FavouriteLocationsSaver(mapper));
-        } catch (LanguageImportFileException | IOException e) {
+        } catch (LanguageImportFileException e) {
             logger.fatal(e);
             throw new RuntimeException(e);
         }

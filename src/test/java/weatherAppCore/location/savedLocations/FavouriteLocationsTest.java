@@ -9,7 +9,7 @@ import weatherAppCore.location.Location;
 import weatherAppCore.location.LocationFactory;
 
 import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 class FavouriteLocationsTest {
@@ -17,10 +17,12 @@ class FavouriteLocationsTest {
     private final LocationFactory locationFactory = new LocationFactory();
     private final CoordinatesFactory coordinatesFactory = new CoordinatesFactory();
     private final FavouriteLocations favouriteLocations = new FavouriteLocations(new HashMap<>());
+    private final LinkedHashMap<Integer, Location> map = new LinkedHashMap<>();
 
     @BeforeEach
     void prepareMap() {
         favouriteLocations.getMap().clear();
+        map.clear();
     }
 
     @Test
@@ -32,11 +34,11 @@ class FavouriteLocationsTest {
         Location test05 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(22,22), "Test05");
 
         Location testAdd = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(23,23), "Test06");
-        favouriteLocations.getMap().put("Test01", test01);
-        favouriteLocations.getMap().put("Test02", test02);
-        favouriteLocations.getMap().put("Test03", test03);
-        favouriteLocations.getMap().put("Test04", test04);
-        favouriteLocations.getMap().put("Test05", test05);
+        favouriteLocations.getMap().put(1, test01);
+        favouriteLocations.getMap().put(2, test02);
+        favouriteLocations.getMap().put(3, test03);
+        favouriteLocations.getMap().put(4, test04);
+        favouriteLocations.getMap().put(5, test05);
 
         assertThrows(MaximumCapacityException.class, () -> favouriteLocations.addLocation(testAdd));
     }
@@ -44,7 +46,7 @@ class FavouriteLocationsTest {
     @Test
     void testAddLocation_throwsDuplicateLocationException() {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(20,20), "Test01");
-        favouriteLocations.getMap().put("Test01", test01);
+        favouriteLocations.getMap().put(1, test01);
 
         assertThrows(DuplicateLocationException.class, () -> favouriteLocations.addLocation(test01));
     }
@@ -62,8 +64,7 @@ class FavouriteLocationsTest {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(20,20), "Test01");
         favouriteLocations.addLocation(test01);
 
-        Map<String, Location> map = new HashMap<>();
-        map.put("Test01", test01);
+        map.put(1, test01);
 
         assertEquals(map, favouriteLocations.getMap());
     }
@@ -72,12 +73,11 @@ class FavouriteLocationsTest {
     void testRemoveLocation_Equals() {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(20,20), "Test01");
         Location test02 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(21,21), "Test02");
-        favouriteLocations.getMap().put("Test01", test01);
-        favouriteLocations.getMap().put("Test02", test02);
+        favouriteLocations.getMap().put(1, test01);
+        favouriteLocations.getMap().put(2, test02);
 
-        Map<String, Location> map = new HashMap<>();
-        map.put("Test02", test02);
-        favouriteLocations.removeLocation(test01);
+        map.put(2, test02);
+        favouriteLocations.removeLocation(1);
 
         assertEquals(map, favouriteLocations.getMap());
     }
@@ -86,10 +86,10 @@ class FavouriteLocationsTest {
     void testRemoveLocation_NotNull() {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(20,20), "Test01");
         Location test02 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(21,21), "Test02");
-        favouriteLocations.getMap().put("Test01", test01);
-        favouriteLocations.getMap().put("Test02", test02);
+        favouriteLocations.getMap().put(1, test01);
+        favouriteLocations.getMap().put(2, test02);
 
-        favouriteLocations.removeLocation(test01);
+        favouriteLocations.removeLocation(1);
 
         assertNotNull(favouriteLocations.getMap());
     }

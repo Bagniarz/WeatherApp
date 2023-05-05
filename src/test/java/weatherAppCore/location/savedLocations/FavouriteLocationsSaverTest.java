@@ -20,8 +20,8 @@ class FavouriteLocationsSaverTest {
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final FavouriteLocationsSaver saver = new FavouriteLocationsSaver(mapper);
-    private final Map<String, Location> map = new HashMap<>();
-    private Map<String, Location> testMap = new HashMap<>();
+    private final Map<Integer, Location> map = new HashMap<>();
+    private Map<Integer, Location> testMap = new HashMap<>();
     private final LocationFactory locationFactory = new LocationFactory();
     private final CoordinatesFactory coordinatesFactory = new CoordinatesFactory();
 
@@ -35,7 +35,7 @@ class FavouriteLocationsSaverTest {
     void testCreateJSONFile_WithSingleKey_NotNull() throws IOException {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(20, 20), "Test01");
         File file = new File("src/test/java/weatherAppCore/location/savedLocations/savedLocationsTestStorage/savedLocationsSaveTest01.json");
-        map.put(test01.getCityName(), test01);
+        map.put(1, test01);
         saver.createJSONFile(map, file);
         testMap = mapper.readValue(file, new TypeReference<>() {});
 
@@ -46,7 +46,7 @@ class FavouriteLocationsSaverTest {
     void testCreateJSONFile_WithSingleKey_Equals() throws IOException {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(25.02, 28.3), "Test01");
         File file = new File("src/test/java/weatherAppCore/location/savedLocations/savedLocationsTestStorage/savedLocationsSaveTest01.json");
-        map.put(test01.getCityName(), test01);
+        map.put(1, test01);
         saver.createJSONFile(map, file);
         testMap = mapper.readValue(file, new TypeReference<>() {});
 
@@ -59,9 +59,9 @@ class FavouriteLocationsSaverTest {
         Location test02 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(23.2, -28.3), "Test02");
         Location test03 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(27.02, 28.3), "Test03");
         File file = new File("src/test/java/weatherAppCore/location/savedLocations/savedLocationsTestStorage/savedLocationsSaveTest02.json");
-        map.put(test01.getCityName(), test01);
-        map.put(test02.getCityName(), test02);
-        map.put(test03.getCityName(), test03);
+        map.put(1, test01);
+        map.put(2, test02);
+        map.put(3, test03);
 
         saver.createJSONFile(map, file);
     }
@@ -72,9 +72,9 @@ class FavouriteLocationsSaverTest {
         Location test02 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(23.2, -28.3), "Test02");
         Location test03 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(27.02, 28.3), "Test03");
         File file = new File("src/test/java/weatherAppCore/location/savedLocations/savedLocationsTestStorage/savedLocationsSaveTest02.json");
-        map.put(test01.getCityName(), test01);
-        map.put(test02.getCityName(), test02);
-        map.put(test03.getCityName(), test03);
+        map.put(1, test01);
+        map.put(2, test02);
+        map.put(3, test03);
 
         saver.createJSONFile(map, file);
         testMap = mapper.readValue(file, new TypeReference<>() {});

@@ -13,7 +13,7 @@ import java.util.Map;
 public class FavouriteLocationsProvider {
     ObjectMapper mapper;
 
-    public Map<String, Location> createMap(File file) throws IOException {
+    public Map<Integer, Location> createMap(File file) throws IOException {
         return mapper.readValue(file, new TypeReference<>() {});
     }
 }

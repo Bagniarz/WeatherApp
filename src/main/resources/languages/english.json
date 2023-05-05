@@ -14,17 +14,22 @@
     "3.Settings",
     "4.Quit"
   ],
+  "initWeatherForecast" : [
+    "1.New location",
+    "2.Choose from saved ones",
+    "3.Back"
+  ],
   "favouriteLocations": [
     "1. Show Current Saved Locations",
     "2. Remove Saved Location",
     "3. Back"
   ],
   "removeLocation" : [
-    "Choose which location you want to delete"
+    "Choose which location you want to delete (Enter integer allocated to location)"
   ],
   "addLocation" : [
-    "1. Save location",
-    "2. Back"
+    "1.Save location",
+    "2.Back"
   ],
   "settings": [
     "1.Change language",

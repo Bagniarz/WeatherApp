@@ -14,16 +14,18 @@
     "3.Ustawienia",
     "4.Wyjdź"
   ],
-  "newOrSaved": [
-
+  "initWeatherForecast" : [
+    "1.Nowa lokacja",
+    "2.Wybierz z zapisanych",
+    "3.Wróć"
   ],
   "favouriteLocations": [
     "1. Pokaż zapisane ulubione lokacje",
     "2. Usuń zapisaną lokacje",
-    "3. Wróc"
+    "3. Wróć"
   ],
   "removeLocation" : [
-    "Wybierz która lokacje chcesz usunąć"
+    "Wybierz która lokacje chcesz usunąć (Wprowadź liczbę przypisaną do lokacji)"
   ],
   "addLocation" : [
     "1. Zapisz Lokacje",

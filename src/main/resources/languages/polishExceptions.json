@@ -5,5 +5,7 @@
   "InternalServerException": "Błąd serwera Geolokalizacji! Spróbój ponownie",
   "LangaugeImportFileException": "Nie znaleziono plików językowych!",
   "DuplicateLocationException": "Ta lokalizacja jest już zapisana!",
-  "MaximumCapacityException": "Ilość zapisanych miejsc osiągneła maksimum!"
+  "MaximumCapacityException": "Ilość zapisanych miejsc osiągneła maksimum!",
+  "EmptyMapException": "Brak zapisanych lokacji!",
+  "WrongLocationInput": "Nie znaleziono lokacji!"
 }

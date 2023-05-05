@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class FavouriteLocationsProviderTest {
 
-    private final Map<String, Location> map = new HashMap<>();
+    private final Map<Integer, Location> map = new HashMap<>();
     private final FavouriteLocationsProvider provider = new FavouriteLocationsProvider(new ObjectMapper());
     private final LocationFactory locationFactory = new LocationFactory();
     private final CoordinatesFactory coordinatesFactory = new CoordinatesFactory();
@@ -37,7 +37,7 @@ class FavouriteLocationsProviderTest {
     @Test
     void testCreateMap_WithSingleKey_Equals() throws IOException {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(25.02, 28.3), "Test01");
-        map.put(test01.getCityName(), test01);
+        map.put(1, test01);
 
         File file = new File("src/test/java/weatherAppCore/location/savedLocations/savedLocationsTestStorage/favouriteLocationsProviderTest01.json");
         assertEquals(provider.createMap(file) , map);
@@ -54,9 +54,9 @@ class FavouriteLocationsProviderTest {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(25.02, 28.3), "Test01");
         Location test02 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(23.2, -28.3), "Test02");
         Location test03 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(27.02, 28.3), "Test03");
-        map.put(test01.getCityName(), test01);
-        map.put(test02.getCityName(), test02);
-        map.put(test03.getCityName(), test03);
+        map.put(1, test01);
+        map.put(2, test02);
+        map.put(3, test03);
 
         File file = new File("src/test/java/weatherAppCore/location/savedLocations/savedLocationsTestStorage/favouriteLocationsProviderTest02.json");
         assertEquals(provider.createMap(file) , map);
