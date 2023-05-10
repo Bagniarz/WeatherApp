@@ -7,5 +7,6 @@
   "DuplicateLocationException": "This location is already saved!",
   "MaximumCapacityException": "Maximum capacity reached",
   "EmptyMapException": "No saved locations found!",
-  "WrongLocationInput": "No location found!"
+  "WrongLocationInput": "No location found!",
+  "IOException": "Saving process corrupted!"
 }

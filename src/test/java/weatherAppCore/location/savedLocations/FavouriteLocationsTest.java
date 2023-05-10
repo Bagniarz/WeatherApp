@@ -1,5 +1,6 @@
 package weatherAppCore.location.savedLocations;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import weatherAppCore.coordinates.CoordinatesFactory;
@@ -8,6 +9,7 @@ import weatherAppCore.exceptions.MaximumCapacityException;
 import weatherAppCore.location.Location;
 import weatherAppCore.location.LocationFactory;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -16,7 +18,7 @@ class FavouriteLocationsTest {
 
     private final LocationFactory locationFactory = new LocationFactory();
     private final CoordinatesFactory coordinatesFactory = new CoordinatesFactory();
-    private final FavouriteLocations favouriteLocations = new FavouriteLocations(new HashMap<>());
+    private final FavouriteLocations favouriteLocations = new FavouriteLocations(new HashMap<>(), new FavouriteLocationsSaver(new ObjectMapper()));
     private final LinkedHashMap<Integer, Location> map = new LinkedHashMap<>();
 
     @BeforeEach
@@ -52,7 +54,7 @@ class FavouriteLocationsTest {
     }
 
     @Test
-    void testAddLocation_NotNull() throws MaximumCapacityException, DuplicateLocationException {
+    void testAddLocation_NotNull() throws MaximumCapacityException, DuplicateLocationException, IOException {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(20,20), "Test01");
         favouriteLocations.addLocation(test01);
 
@@ -60,7 +62,7 @@ class FavouriteLocationsTest {
     }
 
     @Test
-    void testAddLocation_Equals() throws MaximumCapacityException, DuplicateLocationException {
+    void testAddLocation_Equals() throws MaximumCapacityException, DuplicateLocationException, IOException {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(20,20), "Test01");
         favouriteLocations.addLocation(test01);
 
@@ -70,7 +72,7 @@ class FavouriteLocationsTest {
     }
 
     @Test
-    void testRemoveLocation_Equals() {
+    void testRemoveLocation_Equals() throws IOException {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(20,20), "Test01");
         Location test02 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(21,21), "Test02");
         favouriteLocations.getMap().put(1, test01);
@@ -83,7 +85,7 @@ class FavouriteLocationsTest {
     }
 
     @Test
-    void testRemoveLocation_NotNull() {
+    void testRemoveLocation_NotNull() throws IOException {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(20,20), "Test01");
         Location test02 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(21,21), "Test02");
         favouriteLocations.getMap().put(1, test01);

@@ -218,8 +218,13 @@ public class WeatherApp {
         try {
             input.askUserInt(scanner);
             if (input.getInteger() == 1) {
-                addLocationToMap(location);
-                print(language.getMap().get("savedSuccessful"));
+                try {
+                    addLocationToMap(location);
+                    print(language.getMap().get("savedSuccessful"));
+                } catch (IOException e) {
+                    printErr.println(language.getErrMessMap().get("IOException"));
+                    logger.debug(e);
+                }
             }
         } catch (WrongInputException e) {
             printErr.println(language.getErrMessMap().get("WrongInputException"));
@@ -247,7 +252,7 @@ public class WeatherApp {
         }
     }
 
-    public void addLocationToMap(Location location) throws MaximumCapacityException, DuplicateLocationException {
+    public void addLocationToMap(Location location) throws MaximumCapacityException, DuplicateLocationException, IOException {
             locations.addLocation(location);
     }
     public void manageFavouriteLocations() {
@@ -289,9 +294,12 @@ public class WeatherApp {
             logger.debug(e);
             input.clear();
         } catch (WrongInputException e) {
-            printOut.println(language.getErrMessMap().get("WrongInputException"));
+            printErr.println(language.getErrMessMap().get("WrongInputException"));
             logger.debug(e);
             input.clear();
+        } catch (IOException e) {
+            printErr.println(language.getErrMessMap().get("IOException"));
+            logger.debug(e);
         }
     }
 

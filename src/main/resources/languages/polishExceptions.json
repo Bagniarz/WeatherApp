@@ -7,5 +7,6 @@
   "DuplicateLocationException": "Ta lokalizacja jest już zapisana!",
   "MaximumCapacityException": "Ilość zapisanych miejsc osiągneła maksimum!",
   "EmptyMapException": "Brak zapisanych lokacji!",
-  "WrongLocationInput": "Nie znaleziono lokacji!"
+  "WrongLocationInput": "Nie znaleziono lokacji!",
+  "IOException": "Proces zapisywania jest zepsuty!"
 }

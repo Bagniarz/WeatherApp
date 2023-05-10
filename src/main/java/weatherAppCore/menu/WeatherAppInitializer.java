@@ -30,6 +30,7 @@ public class WeatherAppInitializer {
         Settings settings = settingsFactory.createDefaultSettings();
         WeatherApp weatherApp;
         FavouriteLocationsProvider provider = new FavouriteLocationsProvider(mapper);
+        FavouriteLocationsSaver saver = new FavouriteLocationsSaver(mapper);
         try {
             weatherApp = new WeatherApp(settings,
                     UserInput.builder()
@@ -43,9 +44,9 @@ public class WeatherAppInitializer {
                     languageProvider.importLanguage(LanguageSettings.ENGLISH),
                     new PrintStream(System.out),
                     new PrintStream(System.err),
-                    new FavouriteLocations(new LinkedHashMap<>()),
+                    new FavouriteLocations(new LinkedHashMap<>(), saver),
                     provider,
-                    new FavouriteLocationsSaver(mapper));
+                    saver);
         } catch (LanguageImportFileException e) {
             logger.fatal(e);
             throw new RuntimeException(e);

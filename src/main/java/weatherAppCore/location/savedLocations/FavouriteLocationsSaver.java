@@ -11,7 +11,6 @@ import java.util.Map;
 @Value
 public class FavouriteLocationsSaver {
     ObjectMapper mapper;
-    ClassLoader loader = getClass().getClassLoader();
 
     public void createJSONFile(Map<Integer, Location> map, File file) throws IOException {
         mapper.writeValue(file, map);
