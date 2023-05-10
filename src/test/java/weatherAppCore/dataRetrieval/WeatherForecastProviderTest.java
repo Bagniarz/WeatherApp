@@ -2,11 +2,12 @@ package weatherAppCore.dataRetrieval;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import weatherAppCore.coordinates.Coordinates;
 import weatherAppCore.coordinates.CoordinatesFactory;
-import weatherAppCore.location.Location;
 import weatherAppCore.location.LocationFactory;
 import weatherAppCore.settings.SettingsFactory;
+import weatherAppCore.weather.Weather;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -21,12 +22,16 @@ class WeatherForecastProviderTest {
     @Test
     void testGetWeatherList_NotNull() {
         WeatherForecastProvider provider = new WeatherForecastProvider(factory.createDefaultSettings(), mapper);
-        assertNotNull(provider.getWeatherList(locationFactory.buildLocation(coordinatesFactory.buildCoordinates(52, 21), "TEST")));
+        List<Weather> result = provider.getWeatherList(locationFactory.buildLocation(coordinatesFactory.buildCoordinates(52, 21), "TEST"));
+        assertNotNull(result);
     }
 
     @Test
     void testGetWeatherList_NotEmpty_False() {
         WeatherForecastProvider provider = new WeatherForecastProvider(factory.createDefaultSettings(), mapper);
-        assertFalse(provider.getWeatherList(locationFactory.buildLocation(coordinatesFactory.buildCoordinates(52, 21), "TEST")).isEmpty());
+
+        boolean result = provider.getWeatherList(locationFactory.buildLocation(coordinatesFactory.buildCoordinates(46, 23), "TEST")).isEmpty();
+
+        assertFalse(result);
     }
 }

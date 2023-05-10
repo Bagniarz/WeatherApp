@@ -23,6 +23,7 @@ class SettingsTest {
 
     @Test
     void testLoadConfig_NotNull() {
-        assertNotNull(settings.getProp().get("apiKey"));
+        Object apiKey = settings.getProp().get("apiKey");
+        assertNotNull(apiKey);
     }
 }

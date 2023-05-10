@@ -36,7 +36,10 @@ class GeocodingTest {
         String cityName = "London";
         String country = "England";
         Coordinates test01 = coordinatesFactory.buildCoordinates(51.508, -0.127);
-        assertEquals(test01, geocoding.importCoordinates(cityName, country, settings.getProp().get("apiKey").toString()));
+
+        Coordinates result = geocoding.importCoordinates(cityName, country, settings.getProp().get("apiKey").toString());
+
+        assertEquals(test01, result);
     }
 
     @Test
@@ -44,7 +47,10 @@ class GeocodingTest {
         String cityName = "Warsaw";
         String country = "";
         Coordinates test02 = coordinatesFactory.buildCoordinates(52.232, 21.007);
-        assertEquals(test02, geocoding.importCoordinates(cityName, country, settings.getProp().get("apiKey").toString()));
+
+        Coordinates result = geocoding.importCoordinates(cityName, country, settings.getProp().get("apiKey").toString());
+
+        assertEquals(test02, result);
     }
 
     @Test

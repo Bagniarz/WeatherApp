@@ -21,14 +21,14 @@ class FavouriteLocationsSaverTest {
     private final ObjectMapper mapper = new ObjectMapper();
     private final FavouriteLocationsSaver saver = new FavouriteLocationsSaver(mapper);
     private final Map<Integer, Location> map = new HashMap<>();
-    private Map<Integer, Location> testMap = new HashMap<>();
+    private Map<Integer, Location> result = new HashMap<>();
     private final LocationFactory locationFactory = new LocationFactory();
     private final CoordinatesFactory coordinatesFactory = new CoordinatesFactory();
 
     @BeforeEach
     void prepareMaps() {
         map.clear();
-        testMap.clear();
+        result.clear();
     }
 
     @Test
@@ -36,10 +36,11 @@ class FavouriteLocationsSaverTest {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(20, 20), "Test01");
         File file = new File("src/test/java/weatherAppCore/location/savedLocations/savedLocationsTestStorage/savedLocationsSaveTest01.json");
         map.put(1, test01);
-        saver.createJSONFile(map, file);
-        testMap = mapper.readValue(file, new TypeReference<>() {});
 
-        assertNotNull(testMap);
+        saver.createJSONFile(map, file);
+        result = mapper.readValue(file, new TypeReference<>() {});
+
+        assertNotNull(result);
     }
 
     @Test
@@ -47,10 +48,11 @@ class FavouriteLocationsSaverTest {
         Location test01 = locationFactory.buildLocation(coordinatesFactory.buildCoordinates(25.02, 28.3), "Test01");
         File file = new File("src/test/java/weatherAppCore/location/savedLocations/savedLocationsTestStorage/savedLocationsSaveTest01.json");
         map.put(1, test01);
-        saver.createJSONFile(map, file);
-        testMap = mapper.readValue(file, new TypeReference<>() {});
 
-        assertEquals(testMap, map);
+        saver.createJSONFile(map, file);
+        result = mapper.readValue(file, new TypeReference<>() {});
+
+        assertEquals(result, map);
     }
 
     @Test
@@ -64,6 +66,9 @@ class FavouriteLocationsSaverTest {
         map.put(3, test03);
 
         saver.createJSONFile(map, file);
+        result = mapper.readValue(file, new TypeReference<>() {});
+
+        assertEquals(result, map);
     }
 
     @Test
@@ -77,7 +82,7 @@ class FavouriteLocationsSaverTest {
         map.put(3, test03);
 
         saver.createJSONFile(map, file);
-        testMap = mapper.readValue(file, new TypeReference<>() {});
-        assertEquals(testMap, map);
+        result = mapper.readValue(file, new TypeReference<>() {});
+        assertEquals(result, map);
     }
 }
