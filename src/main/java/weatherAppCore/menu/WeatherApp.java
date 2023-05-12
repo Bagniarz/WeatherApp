@@ -49,10 +49,7 @@ public class WeatherApp {
     final FavouriteLocationsSaver saver;
     private static final Logger logger = LogManager.getLogger(WeatherApp.class);
 
-// TODO Method that gives to System.out string to print
-// TODO Refactor logger
 // TODO Read about Hamcrest
-// TODO Rework Tests
 
 //  Printer with translator
 

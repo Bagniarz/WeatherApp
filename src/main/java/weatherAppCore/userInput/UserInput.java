@@ -15,7 +15,7 @@ public class UserInput {
     int integer;
 
     public void askUserInt(Scanner scanner) throws WrongInputException {
-        String result = scanner.nextLine();
+        String result = scanner.nextLine().trim();
         if (result.isEmpty() || result.length() > 2 || !isLetterInNumber(result)) {
             throw new WrongInputException();
         }
@@ -23,7 +23,7 @@ public class UserInput {
     }
 
     public void askUserString(Scanner scanner) throws WrongInputException {
-        String result = scanner.nextLine();
+        String result = scanner.nextLine().trim();
         if (result.isEmpty() || isNumberInString(result) || !isAlphabetic(result)) {
             throw new WrongInputException();
         }
